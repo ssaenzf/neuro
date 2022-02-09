@@ -1,5 +1,4 @@
 from Neurona import Neurona
-import random
 import numpy as np
 
 class Capa:
@@ -11,7 +10,7 @@ class Capa:
 
     def inicializar(self):
         for neurona in self.neuronas:
-            neurona.inicializar()
+            neurona.Inicializar(0)
 
     def aniadir(self, neurona):
         self.neuronas = np.append(self.neuronas, neurona)
