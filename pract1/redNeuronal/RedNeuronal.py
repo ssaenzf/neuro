@@ -1,4 +1,3 @@
-from Capa import Capa
 import numpy as np
 
 class RedNeuronal:
@@ -22,3 +21,4 @@ class RedNeuronal:
     def propagar(self):
         for capa in self.capas:
             capa.propagar()
+            

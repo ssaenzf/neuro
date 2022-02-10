@@ -1,33 +1,42 @@
-from Conexion import Conexion
-from Tipo import Tipo
+from redNeuronal.Conexion import Conexion
+from redNeuronal.Tipo import Tipo
+import numpy as np
 
 class Neurona:
-    def __init__(self, umbral, tipo):
+    def __init__(self, umbral=2.0, tipo=Tipo.DIRECTA, name=''):
         self.umbral = umbral
         self.tipo = tipo
-        self.conexiones = []
+        self.conexiones = np.empty(0, dtype=object)
+        self.valor_entrada = 0
+        self.valor_salida = 0
+        self.name = name
 
-    def Liberar(self):
+    def liberar(self):
         pass
 
-    def Inicializar(self, x):    
+    def inicializar(self, x):    
         self.valor_entrada = x
 
-    def Conectar(self, neurona, peso):
+    def conectar(self, neurona, peso):
         conexion = Conexion(peso, neurona)
-        self.conexiones.append(conexion)
+        self.conexiones = np.append(self.conexiones, conexion)
 
-    def Disparar(self):
+    def disparar(self):
         if self.tipo == Tipo.DIRECTA:
             self.valor_salida = self.valor_entrada
+        elif self.tipo == Tipo.SESGO:
+            self.valor_salida = 1
         elif self.tipo == Tipo.MCCULLOCH:
-            if self.valor_entrada >= self.umbral:
-                self.valor_salida = 1
-            else:
-                self.valor_salida = 0
+            self.valor_salida = 1 if self.valor_entrada >= self.umbral else 0
         else:
-            pass
+            self.valor_salida = 0
+        
+        for conexion in self.conexiones:
+            conexion.valor = self.valor_salida
     
-    def Propagar(self):
+    def propagar(self):
         for conexion in self.conexiones:
             conexion.neurona.valor_entrada += conexion.valor * conexion.peso 
+
+    def __str__(self):
+        return "Neurona: " + self.name + " " + str(self.valor_entrada) + " " + str(self.valor_salida)

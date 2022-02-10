@@ -1,4 +1,3 @@
-from Neurona import Neurona
 import numpy as np
 
 class Capa:
@@ -10,7 +9,7 @@ class Capa:
 
     def inicializar(self):
         for neurona in self.neuronas:
-            neurona.Inicializar(0)
+            neurona.inicializar(0)
 
     def aniadir(self, neurona):
         self.neuronas = np.append(self.neuronas, neurona)
@@ -32,3 +31,9 @@ class Capa:
     def propagar(self):
         for neurona in self.neuronas:
             neurona.propagar()
+    
+    def __str__(self):
+        text = ''
+        for neurona in self.neuronas:
+            text += neurona.__str__() + '\n'
+        return text
