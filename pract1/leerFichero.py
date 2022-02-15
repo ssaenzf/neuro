@@ -1,44 +1,81 @@
-from sympy import arg
-from redNeuronal.RedNeuronal import RedNeuronal
-from redNeuronal.Capa import Capa
-from redNeuronal.Neurona import Neurona
-from redNeuronal.Tipo import Tipo
 import argparse
+from sklearn.model_selection import train_test_split
+import numpy as np
 
-def mode1(file_name, porcion):
-    f = open(file_name, 'r')
+class LeerFichero:
+    @staticmethod
+    def mode1(file_name, porcion):
+        f = open(file_name, 'r')
 
-    n_atr, n_class = f.readline().replace('\n', '').split(' ')
-    print(n_atr, n_class)
-    for row in f.readlines():
-        row = row.replace('\n', '').split(' ')
-        print(row)
+        n_atr, n_class = f.readline().replace('\n', '').split()
+        n_atr = int(n_atr)
+        n_class = int(n_class)
+        X, y = [], []
+        for row in f.readlines():
+            row = row.replace('\n', '').split()
+            X.append(row[:-n_class])
+            y.append(row[-n_class:])
+        f.close()
 
-    f.close()
+        X = np.array(X, dtype=float)
+        y = np.array(y, dtype=int)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=float(porcion))
 
-def mode2(file_name):
-    f = open(file_name, 'r')
+        print(X.shape, y.shape)
+        print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+        print(X_train[0], y_train[0])
+        return X_train, X_test, y_train, y_test
 
-    n_atr, n_class = f.readline().replace('\n', '').split(' ')
-    print(n_atr, n_class)
-    for row in f.readlines():
-        row = row.replace('\n', '').split(' ')
-        print(row)
+    @staticmethod
+    def mode2(file_name):
+        f = open(file_name, 'r')
 
-    f.close()
+        n_atr, n_class = f.readline().replace('\n', '').split()
+        n_atr = int(n_atr)
+        n_class = int(n_class)
+        X, y = [], []
+        for row in f.readlines():
+            row = row.replace('\n', '').split()
+            X.append(row[:-n_class])
+            y.append(row[-n_class:])
+        f.close()
 
-def mode3(f_train_name, f_test_name):
-    f_train = open(f_train_name, 'r')
-    f_test = open(f_test_name, 'r')
+        X = np.array(X, dtype=float)
+        y = np.array(y, dtype=int)
+        return X, y
 
-    n_atr, n_class = f_train.readline().replace('\n', '').split(' ')
-    print(n_atr, n_class)
-    for row in f_train.readlines():
-        row = row.replace('\n', '').split(' ')
-        print(row)
+    @staticmethod
+    def mode3(f_train_name, f_test_name):
+        f_train = open(f_train_name, 'r')
+        f_test = open(f_test_name, 'r')
 
-    f_train.close()
-    f_test.close()
+        n_atr, n_class = f_train.readline().replace('\n', '').split()
+        n_atr = int(n_atr)
+        n_class = int(n_class)
+        X_train, y_train = [], []
+        for row in f_train.readlines():
+            row = row.replace('\n', '').split()
+            X_train.append(row[:-n_class])
+            y_train.append(row[-n_class:])
+        
+        n_atr, n_class = f_test.readline().replace('\n', '').split()
+        n_atr = int(n_atr)
+        n_class = int(n_class)
+        X_test, y_test = [], []
+        for row in f_train.readlines():
+            row = row.replace('\n', '').split()
+            X_test.append(row[:-n_class])
+            y_test.append(row[-n_class:])
+
+        f_train.close()
+        f_test.close()
+
+        X_train = np.array(X_train, dtype=float)
+        y_train = np.array(y_train, dtype=int)
+        X_test = np.array(X_test, dtype=float)
+        y_test = np.array(y_test, dtype=int)
+
+        return X_train, X_test, y_train, y_test
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -59,13 +96,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.modo1:
-        mode1(args.modo1[0], args.modo1[1])
+        X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         exit(0)
     
     if args.modo2:
-        mode2(args.modo2[0])
+        X, y = LeerFichero.mode2(args.modo2[0])
         exit(0)
     
     if args.modo3:
-        mode3(args.modo3[0], args.modo3[1])
+        X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         exit(0)

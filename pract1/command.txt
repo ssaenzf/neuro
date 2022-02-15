@@ -1,4 +1,12 @@
 python McCulloch-Pitts.py --f_in data/entrada.txt --f_out salida.txt
-python leerFichero.py --modo1 data/entrada2.txt 4
+python leerFichero.py --modo1 data/entrada2.txt 0.4
 python leerFichero.py --modo2 data/entrada2.txt
 python leerFichero.py --modo3 data/entrada2.txt data/entrada2.txt 
+
+python perceptron.py --modo2 data/and.txt
+python perceptron.py --modo2 data/or.txt
+python perceptron.py --modo2 data/nand.txt
+python perceptron.py --modo2 data/xor.txt
+
+
+python leerFichero.py --modo1 data/problema_real1.txt 0.4
