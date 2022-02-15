@@ -22,6 +22,4 @@ class RedNeuronal:
         for capa in self.capas:
             capa.propagar()
     
-    def train(x, t):
-        
             
