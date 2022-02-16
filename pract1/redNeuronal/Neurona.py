@@ -28,14 +28,18 @@ class Neurona:
             self.valor_salida = 1
         elif self.tipo == Tipo.MCCULLOCH:
             self.valor_salida = 1 if self.valor_entrada >= self.umbral else 0
-        elif self.tipo == Tipo.PERCEPTRON:
-            if self.valor_entrada >= self.umbral:
+        elif self.tipo == Tipo.PERCEPTRON :
+            if self.valor_entrada >= self.umbral:   # Este >=, igual sobre el =
                 self.valor_salida = 1
             elif self.valor_entrada < -self.umbral:
                 self.valor_salida = -1
             else:
                 self.valor_salida = 0
-            
+        elif self.tipo == Tipo.ADALINE:
+            if self.valor_entrada >= self.umbral:
+                self.valor_salida = 1
+            else:
+                self.valor_salida = -1
         else:
             self.valor_salida = 0
         

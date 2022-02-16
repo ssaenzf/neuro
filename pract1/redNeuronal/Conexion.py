@@ -3,6 +3,7 @@ class Conexion:
         self.peso = peso
         self.neurona = neurona
         self.valor = 0
+        self.peso_anterior = None
     
     def liberar(self):
         pass
