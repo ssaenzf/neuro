@@ -11,11 +11,11 @@ class Perceptron():
     # Funcion para la construccion de la red del perceptron
     def __init__(self, umbral=0.0, alpha=1.0):
         self.perceptron = RedNeuronal()
+        self.umbral = umbral
         self.alpha = alpha
-        n_atributos = len(X_train[0])
-        n_clases = len(y_train[0])
 
-        # Neuronas capa entrada
+    def make_red(self, n_atributos, n_clases):
+         # Neuronas capa entrada
         neuronas_entrada = []
         for i in range(0, n_atributos):
             # Las neuronas de entrada, siempre directas ya que se limitan a retransmitir su entrada, por ello no tienen umbral
@@ -26,7 +26,7 @@ class Perceptron():
         # Neuronas capa salida
         neuronas_salida = [] 
         for i in range(n_clases):
-            neuronas_salida.append(Neurona(umbral = umbral, tipo=Tipo.PERCEPTRON))  # Se aniade el umbral especificado
+            neuronas_salida.append(Neurona(umbral = self.umbral, tipo=Tipo.PERCEPTRON))  # Se aniade el umbral especificado
         
         # Conexiones. Todas las neuronas de la capa de entrada se conectan con todas las neuronas de la capa de salida
         for i in range(n_atributos + 1): # + 1 debido a que hay que conectar el bias a todas las neuronas de la capa de salida tambien
@@ -45,15 +45,18 @@ class Perceptron():
 
     # Funcion para la realizacion del entrenamiento por el perceptron
     def train(self, X_train, y_train):
+        # Se crea la red del perceptron
+        self.make_red(X_train.shape[1], y_train.shape[1])
+
         # Paso 0, inicial todos los pesos y sesgo
         self.perceptron.inicializar()
         epoca = 0
 
         # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-6
-        peso_actualizado = True
-        while peso_actualizado:
-            # Se pone peso_actualizado a False suponiendo que no va a actualizar durante la epoca
-            peso_actualizado = False
+        parar = False
+        while not parar:
+            # Se pone parar a True suponiendo que no va a actualizar durante la epoca
+            parar = True
 
             # Uso para el calculo del error cuadratico medio en cada epoca
             epoca += 1
@@ -95,7 +98,7 @@ class Perceptron():
                 
                 # Paso 5, ajustar los pesos en el caso de que alguna clase no coincide
                 if error:
-                    # -1 debido a que el bias se ajusta de forma distinta y por tanto separada
+                    # Ajuste de los pesos menos bias
                     for i in range(len(self.perceptron.capas[0].neuronas) - 1):
                         neurona_i = self.perceptron.capas[0].neuronas[i]
                         # Conexiones de la neurona en cuestion
@@ -106,9 +109,9 @@ class Perceptron():
 
                             # Si hay algun cambio en los pesos respecto anterior, se actualiza el flag
                             if ultimo_pesos[j][i] != nuevo_peso:
-                                peso_actualizado = True
+                                parar = False
 
-                    
+                    # Ajuste de los pesos en bias
                     bias_i = self.perceptron.capas[0].neuronas[i+1]
                     for j in range(len(self.perceptron.capas[-1].neuronas)):
                         nuevo_peso = bias_i.conexiones[j].peso_anterior + self.alpha * record_y[j]
@@ -117,7 +120,7 @@ class Perceptron():
 
                         # Si hay algun cambio en los pesos respecto anterior, se actualiza el flag
                         if ultimo_pesos[j][i] != nuevo_peso:
-                            peso_actualizado = True
+                            parar = False
             
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
             error_cuad_med = error_cuad_med/(len(record_y)*len(y_train))
@@ -196,10 +199,10 @@ if __name__ == '__main__':
         perceptron.predecir(X_test, f_out)
 
     elif args.modo2:
-        X_train, y_train = LeerFichero.mode2(args.modo2[0])
+        X, y = LeerFichero.mode2(args.modo2[0])
         perceptron = Perceptron(umbral=0.2, alpha=1)
-        perceptron.train(X_train, y_train)
-        perceptron.predecir(X_train, f_out)
+        perceptron.train(X, y)
+        perceptron.predecir(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         perceptron = Perceptron(umbral=0.2, alpha=0.1)

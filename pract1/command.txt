@@ -5,7 +5,7 @@ python perceptron.py --modo2 data/or.txt --f_out salida.txt
 python perceptron.py --modo2 data/nand.txt --f_out salida.txt
 python perceptron.py --modo2 data/xor.txt --f_out salida.txt
 
+python adaline.py --modo2 data/and.txt
+
+Debug
 python perceptronZhijieDebug.py --modo2 data/and2.txt
-
-
-python leerFichero.py --modo1 data/problema_real1.txt 0.4

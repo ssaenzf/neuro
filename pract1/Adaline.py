@@ -1,27 +1,24 @@
-from sympy import arg
+from sys import stdout
+
+from yarl import cache_clear
 from redNeuronal.RedNeuronal import RedNeuronal
 from redNeuronal.Capa import Capa
 from redNeuronal.Neurona import Neurona
 from redNeuronal.Tipo import Tipo
 import argparse
-from sklearn.model_selection import train_test_split
-import numpy as np
 from leerFichero import LeerFichero
 
 class Adaline():
 
-    # Funcion para la construccion de la red de adaline
-    def __init__(self, X_train, y_train, epocas=100, alpha=1.0):
-        self.epocas = epocas
-        self.adaline = RedNeuronal()
+    # Funcion para la construccion de la red del perceptron
+    def __init__(self, umbral=0.0, alpha=1.0, tolerancia=0.0):
+        self.perceptron = RedNeuronal()
+        self.umbral = umbral
         self.alpha = alpha
-        self.X_train = X_train
-        self.y_train = y_train
-        n_atributos = len(X_train[0])
-        n_clases = len(y_train[0])
-        umbral=0.0
+        self.tolerancia = tolerancia
 
-        # Neuronas capa entrada
+    def make_red(self, n_atributos, n_clases):
+         # Neuronas capa entrada
         neuronas_entrada = []
         for i in range(0, n_atributos):
             # Las neuronas de entrada, siempre directas ya que se limitan a retransmitir su entrada, por ello no tienen umbral
@@ -32,110 +29,141 @@ class Adaline():
         # Neuronas capa salida
         neuronas_salida = [] 
         for i in range(n_clases):
-            neuronas_salida.append(Neurona(umbral = umbral, tipo=Tipo.ADALINE))  # Se aniade el umbral especificado
+            neuronas_salida.append(Neurona(umbral = self.umbral, tipo=Tipo.PERCEPTRON))  # Se aniade el umbral especificado
         
         # Conexiones. Todas las neuronas de la capa de entrada se conectan con todas las neuronas de la capa de salida
         for i in range(n_atributos + 1): # + 1 debido a que hay que conectar el bias a todas las neuronas de la capa de salida tambien
             for j in range(n_clases):
                 neuronas_entrada[i].conectar(neuronas_salida[j], 0) # Pesos de las conexiones inicialmente a 0
 
-        # Creacion capas y anidamiento de neuronas en estas, y anidamiento capas dentro de la red neuronal adalines
+        # Creacion capas y anidamiento de neuronas en estas, y anidamiento capas dentro de la red neuronal perceptron
         capa_entrada = Capa()
         capa_salida = Capa()
         for i in range(n_atributos + 1): # + 1 debido a que en la capa de entrada se aniade tambien el bias
             capa_entrada.aniadir(neuronas_entrada[i])
         for i in range(n_clases): 
             capa_salida.aniadir(neuronas_salida[i])
-        self.adaline.aniadir(capa_entrada)
-        self.adaline.aniadir(capa_salida)
+        self.perceptron.aniadir(capa_entrada)
+        self.perceptron.aniadir(capa_salida)
 
-    # Funcion para la realizacion del entrenamiento por Adaline
-    def train(self):
+    # Funcion para la realizacion del entrenamiento por el perceptron
+    def train(self, X_train, y_train):
+        # Se crea la red del adaline
+        self.make_red(X_train.shape[1], y_train.shape[1])
 
-        for epoca in range(self.epocas + 1):
+        # Paso 0, inicial todos los pesos y sesgo
+        self.perceptron.inicializar()
+        epoca = 0
+
+        # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-6
+        parar = False
+        while not parar:
+            # Se pone parar a True suponiendo que no va a actualizar durante la epoca
+            parar = True
+
+            # Uso para el calculo del error cuadratico medio en cada epoca
+            epoca += 1
             error_cuad_med = 0
-            for m in range(len(self.y_train)):
-                record_x = self.X_train[m]
-                record_y = self.y_train[m]
-                # Se inicializan a 0 las neuronas de la capa de salida
-                for i in range(len(self.adaline.capas[1].neuronas)):
-                    self.adaline.capas[1].neuronas[i].inicializar(0.0)
-                
-                # Se inicializan con los valores de entrada las neuronas de la capa de entrada, a excepcion del bias 
-                for i in range(len(self.adaline.capas[0].neuronas) - 1):
-                    self.adaline.capas[0].neuronas[i].inicializar(float(record_x[i]))
-                    self.adaline.capas[0].neuronas[i].disparar()
-                    self.adaline.capas[0].neuronas[i].propagar()
-                self.adaline.capas[0].neuronas[i+1].inicializar(0.0) # Neurona del bias, siempre inicializada a 1
-                self.adaline.capas[0].neuronas[i+1].disparar()
-                self.adaline.capas[0].neuronas[i+1].propagar()
 
-                # Obtención de las salidas, de la capa de salida
-                for i in range(len(self.adaline.capas[1].neuronas)):
-                    self.adaline.capas[1].neuronas[i].disparar()
+            # Inicializar cambio de peso a 0 para condicion de parada
+            cambio_peso = 0
+
+            # Paso 2, para cada par de entrenamiento, ejecutar paso 3-5
+            for m in range(len(y_train)):
+                record_x = X_train[m]
+                record_y = y_train[m]
+
+                # Paso 3, establecer las activaciones a las neuronas de entrada, a excepcion del bias 
+                for i in range(len(self.perceptron.capas[0].neuronas) - 1):
+                    self.perceptron.capas[0].neuronas[i].inicializar(record_x[i])
                 
-                # Obtencion flag sobre si ha habido error o no en la prediccion para saber realizar el posterior ajuste 
-                # de pesos a las conexiones. Ademas obtencion del error cuadratico medio
-                error = False   # flag para saber si hay diferencia del valor predecido respecto al real
-                for i in range(len(self.adaline.capas[1].neuronas)):
-                    error_cuad_med += (self.adaline.capas[1].neuronas[i].valor_salida - float(record_y[i]))**2
-                    if self.adaline.capas[1].neuronas[i].valor_salida != float(record_y[i]):
-                        error = True
+                # Paso 4, calcular la respuesta de cada neurona de salida y_in
+                self.perceptron.capas[0].disparar()
+                self.perceptron.capas[0].propagar()
+
+                # Obtención de las salidas y_in, de la capa de salida
+                self.perceptron.capas[-1].disparar()
                 
-                # Ajuste de pesos en caso de error
-                if error == True:
-                    for i in range(len(self.adaline.capas[0].neuronas) - 1):  # -1 debido a que el bias se ajusta de forma distinta y por tanto separada
-                        for j in range(len(self.adaline.capas[0].neuronas[i].conexiones)): # Conexiones de la neurona en cuestion
-                            # Cada conexion esta conectada a una neurona de salida que se debera encontrar su indice, para saber por otra parte
-                            # el indice que se corresponde del record_y del y_train
-                            for k in range(len(self.adaline.capas[1].neuronas)):
-                                if self.adaline.capas[0].neuronas[i].conexiones[j].neurona == self.adaline.capas[1].neuronas[k]:
-                                    # peso nuevo = peso anterior + alpha*(t-y_in)*xi
-                                    self.adaline.capas[0].neuronas[i].conexiones[j].peso_anterior = self.adaline.capas[0].neuronas[i].conexiones[j].peso
-                                    self.adaline.capas[0].neuronas[i].conexiones[j].peso = self.adaline.capas[0].neuronas[i].conexiones[j].peso + ((float(record_y[k])-self.adaline.capas[1].neuronas[k].valor_salida) * self.alpha * self.adaline.capas[0].neuronas[i].valor_salida)
-                    # Ajuste peso conexion bias
-                    # Se busca la neurona que esta conectada a la conexion del bias
-                    for k in range(len(self.adaline.capas[0].neuronas[i+1].conexiones)):
-                        for j in range(len(self.adaline.capas[1].neuronas)):
-                            if self.adaline.capas[0].neuronas[i+1].conexiones[k].neurona == self.adaline.capas[1].neuronas[j]:
-                                self.adaline.capas[0].neuronas[i+1].conexiones[k].peso_anterior = self.adaline.capas[0].neuronas[i+1].conexiones[k].peso
-                                # peso nuevo = peso anterior + alpha*(t-y_in)
-                                self.adaline.capas[0].neuronas[i+1].conexiones[k].peso = self.adaline.capas[0].neuronas[i+1].conexiones[k].peso + (self.alpha * (float(record_y[j])-self.adaline.capas[1].neuronas[j].valor_salida))
-            
+                # Obtencion del error cuadratico medio
+                for neurona, t in zip(self.perceptron.capas[-1].neuronas, record_y):
+                    error_cuad_med += (neurona.valor_salida - t)**2
+                
+                # Ajuste de los pesos menos bias
+                for i in range(len(self.perceptron.capas[0].neuronas) - 1):
+                    neurona_i = self.perceptron.capas[0].neuronas[i]
+                    # Conexiones de la neurona en cuestion
+                    for j in range(len(self.perceptron.capas[-1].neuronas)):
+                        y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
+                        cambio = self.alpha * (record_y[j] - y_in) * record_x[i]
+                        nuevo_peso = neurona_i.conexiones[j].peso_anterior + cambio
+                        neurona_i.conexiones[j].peso = nuevo_peso
+                        neurona_i.conexiones[j].peso_anterior = nuevo_peso
+
+                        # Actualiza cambio peso si existe uno mayor
+                        if cambio_peso < cambio:
+                            cambio_peso = cambio
+
+                # Ajuste de los pesos en bias
+                bias_i = self.perceptron.capas[0].neuronas[i+1]
+                for j in range(len(self.perceptron.capas[-1].neuronas)):
+                    y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
+                    cambio = self.alpha * (record_y[j] - y_in)
+                    nuevo_peso = bias_i.conexiones[j].peso_anterior + cambio
+                    bias_i.conexiones[j].peso = nuevo_peso
+                    bias_i.conexiones[j].peso_anterior = nuevo_peso
+
+                    # Actualiza cambio peso si existe uno mayor
+                    if cambio_peso < cambio:
+                            cambio_peso = cambio
+
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
-            error_cuad_med = error_cuad_med/(len(record_y)*len(self.y_train))
+            error_cuad_med = error_cuad_med/(len(record_y)*len(y_train))
             
             # Impresion por pantalla de epoca completada y error cuadratico medio
-            print(f"Epoca: {epoca}/{self.epocas}, MSE: {error_cuad_med}")
+            print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+            
+            # Paso 6, si cambio_peso es menor que la torelancia, se termina, sino vuelve al bucle while
+            if cambio_peso >= self.tolerancia:
+                parar = False
     
-    # Funcion para la prediccion de la red de adaline
-    def predecir(self, X_test, fichero_salida):
-        # Se abre el fichero donde se escriben las predicciones resueltas
-        f_out = open(fichero_salida, 'w')
+    # Funcion para la prediccion de la red del perceptron
+    def predecir(self, X_test, f_out):
+        text = ""
+        for i in range(len(self.perceptron.capas[0].neuronas) - 1):
+            text += "X{}\t".format(i+1)
+        for j in range(len(self.perceptron.capas[-1].neuronas)):
+            text += "Y{}\t".format(j+1)
+        text += "\n"
+        f_out.write(text)
+
+        # Vacia todas las entradas de la red
+        self.perceptron.inicializar()
+
         # Se ejecuta uno a uno el calcula y prediccion para cada registro de entrada
         for x in X_test:
-            # Las neuronas de salida se inicializan con valor 0, para que no se acumulen valores aqui anteriores
-            for i in range(len(self.adaline.capas[1].neuronas)):
-                self.adaline.capas[1].neuronas[i].inicializar(0.0)
             # Las neuronas de entrada se inicializan con el valor de entrada a la red, salvo el bias que tiene valor 1 por defecto
-            for i in range(len(self.adaline.capas[0].neuronas) - 1):
-                self.adaline.capas[0].neuronas[i].inicializar(float(x[i]))
-                self.adaline.capas[0].neuronas[i].disparar()
-                self.adaline.capas[0].neuronas[i].propagar()
-            self.adaline.capas[0].neuronas[i+1].disparar()
-            self.adaline.capas[0].neuronas[i+1].propagar()
+            for i in range(len(self.perceptron.capas[0].neuronas) - 1):
+                self.perceptron.capas[0].neuronas[i].inicializar(x[i])
+            
+            # Calcula la respuesta de cada neurona de salida y_in
+            self.perceptron.capas[0].disparar()
+            self.perceptron.capas[0].propagar()
+
+            # Obtención de las salidas y_in, de la capa de salida
+            self.perceptron.capas[-1].disparar()
+
             # Se recorren las neuronas de salida recolectando el valor que dan
             text = ''
-            for i in range(len(self.adaline.capas[1].neuronas)):
-                self.adaline.capas[1].neuronas[i].disparar()
-                text += f" {self.adaline.capas[1].neuronas[i].valor_salida}"
+            for neurona in self.perceptron.capas[-1].neuronas:
+                for x_i in x:
+                    text += "{}\t".format(x_i)
+                text += "{:.2f}\t".format(neurona.valor_salida)
             text += '\n'
             f_out.write(text)
-        f_out.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Adaline')
+        description='Perceptron')
     parser.add_argument('--modo1',
                         nargs=2,
                         metavar=('fichero', 'porcion'),
@@ -148,23 +176,36 @@ if __name__ == '__main__':
                         nargs=2,
                         metavar=('train', 'test'),
                         help='Nombre del fichero de entrada')
+    parser.add_argument('--f_out',
+                        nargs=1,
+                        metavar='fichero',
+                        help='Nombre del fichero de entrada')
 
     args = parser.parse_args()
 
+    if not args.f_out:
+        f_out = stdout
+    else:
+        f_out = open(args.f_out[0], 'w')
+
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
-        adaline = Adaline(X_train, y_train, epocas=10, alpha=0.05)
-        adaline.train()
-        adaline.predecir(X_test, "salida.txt")
+        adaline = Adaline(umbral=0.2, alpha=0.1, tolerancia=0.1)
+        adaline.train(X_train, y_train)
+        adaline.predecir(X_test, f_out)
 
     elif args.modo2:
-        X_train, y_train = LeerFichero.mode2(args.modo2[0])
-        adaline = Adaline(X_train, y_train, epocas=10, alpha=0.01)
-        adaline.train()
-        adaline.predecir(X_train, "salida.txt")
-        
+        X, y = LeerFichero.mode2(args.modo2[0])
+        adaline = Adaline(umbral=0.2, alpha=1, tolerancia=0.1)
+        adaline.train(X, y)
+        adaline.predecir(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
-        adaline = Adaline(X_train, y_train, epocas=10, alpha=0.05)
-        adaline.train()
-        adaline.predecir(X_test, "salida.txt")
+        adaline = Adaline(umbral=0.2, alpha=0.1, tolerancia=0.1)
+        adaline.train(X_train, y_train)
+        adaline.predecir(X_test, f_out)
+    else:
+        print("Error en los argumentos, necesita especificar algun modo de operacion.")
+        exit(1)
+    
+    f_out.close() if args.f_out else None
