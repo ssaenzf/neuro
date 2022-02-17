@@ -98,7 +98,7 @@ class Perceptron():
                 
                 # Paso 5, ajustar los pesos en el caso de que alguna clase no coincide
                 if error:
-                    # Ajuste de los pesos menos bias
+                    # Paso 5.a Ajuste de los pesos menos bias
                     for i in range(len(self.perceptron.capas[0].neuronas) - 1):
                         neurona_i = self.perceptron.capas[0].neuronas[i]
                         # Conexiones de la neurona en cuestion
@@ -111,7 +111,7 @@ class Perceptron():
                             if ultimo_pesos[j][i] != nuevo_peso:
                                 parar = False
 
-                    # Ajuste de los pesos en bias
+                    # Paso 5.b Ajuste de los pesos en bias
                     bias_i = self.perceptron.capas[0].neuronas[i+1]
                     for j in range(len(self.perceptron.capas[-1].neuronas)):
                         nuevo_peso = bias_i.conexiones[j].peso_anterior + self.alpha * record_y[j]

@@ -88,7 +88,7 @@ class Adaline():
                 for neurona, t in zip(self.perceptron.capas[-1].neuronas, record_y):
                     error_cuad_med += (neurona.valor_salida - t)**2
                 
-                # Ajuste de los pesos menos bias
+                # Paso 5.a Ajuste de los pesos menos bias
                 for i in range(len(self.perceptron.capas[0].neuronas) - 1):
                     neurona_i = self.perceptron.capas[0].neuronas[i]
                     # Conexiones de la neurona en cuestion
@@ -103,7 +103,7 @@ class Adaline():
                         if cambio_peso < cambio:
                             cambio_peso = cambio
 
-                # Ajuste de los pesos en bias
+                # Paso 5.b Ajuste de los pesos en bias
                 bias_i = self.perceptron.capas[0].neuronas[i+1]
                 for j in range(len(self.perceptron.capas[-1].neuronas)):
                     y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
