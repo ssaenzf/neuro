@@ -27,6 +27,7 @@ class Capa:
     def disparar(self):
         for neurona in self.neuronas:
             neurona.disparar()
+            neurona.inicializar(0)
 
     def propagar(self):
         for neurona in self.neuronas:

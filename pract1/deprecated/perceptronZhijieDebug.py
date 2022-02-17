@@ -44,7 +44,7 @@ class Perceptron():
         self.perceptron.aniadir(capa_salida)
 
     # Funcion para la realizacion del entrenamiento por el perceptron
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, debug=False):
         # Paso 0, inicial todos los pesos y sesgo
         self.perceptron.inicializar()
         epoca = 0
@@ -68,6 +68,13 @@ class Perceptron():
                 for neurona in self.perceptron.capas[0].neuronas:
                     temp.append(neurona.conexiones[j].peso)
                 ultimo_pesos.append(temp)
+
+            # Uso debug
+            if debug:
+                print("==============================")
+                for i in range(len(self.perceptron.capas[0].neuronas)):
+                    print("W{}".format(i+1), end = '\t')
+                print("")
 
             # Paso 2, para cada par de entrenamiento, ejecutar paso 3-5
             for m in range(len(y_train)):
@@ -118,6 +125,13 @@ class Perceptron():
                         # Si hay algun cambio en los pesos respecto anterior, se actualiza el flag
                         if ultimo_pesos[j][i] != nuevo_peso:
                             peso_actualizado = True
+
+                # Uso debug
+                if debug:
+                    for j in range(len(self.perceptron.capas[-1].neuronas)):
+                        for neurona in self.perceptron.capas[0].neuronas:
+                            print("{:.2f}".format(neurona.conexiones[j].peso), end = '\t')
+                        print("")
             
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
             error_cuad_med = error_cuad_med/(len(record_y)*len(y_train))
@@ -126,9 +140,10 @@ class Perceptron():
             print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
             
             # Paso 6, si peso_actualizado = False, se termina el entrenamiento, sino vuelve al bucle while
-    
+        print("==============================")
+        
     # Funcion para la prediccion de la red del perceptron
-    def predecir(self, X_test, f_out):
+    def predecir(self, X_test, fichero_salida):
         text = ""
         for i in range(len(self.perceptron.capas[0].neuronas) - 1):
             text += "X{}\t".format(i+1)
@@ -192,18 +207,18 @@ if __name__ == '__main__':
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         perceptron = Perceptron(umbral=0.2, alpha=0.1)
-        perceptron.train(X_train, y_train)
+        perceptron.train(X_train, y_train, debug=True)
         perceptron.predecir(X_test, f_out)
 
     elif args.modo2:
         X_train, y_train = LeerFichero.mode2(args.modo2[0])
-        perceptron = Perceptron(umbral=0.2, alpha=1)
-        perceptron.train(X_train, y_train)
+        perceptron = Perceptron( umbral=0.2, alpha=1)
+        perceptron.train(X_train, y_train, debug=True)
         perceptron.predecir(X_train, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         perceptron = Perceptron(umbral=0.2, alpha=0.1)
-        perceptron.train(X_train, y_train)
+        perceptron.train(X_train, y_train, debug=True)
         perceptron.predecir(X_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")

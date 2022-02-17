@@ -12,17 +12,14 @@ if __name__ == '__main__':
     parser.add_argument('--f_in',
                         nargs=1,
                         metavar='fichero',
-                        help='Nombre del fichero de entrada')
+                        help='Nombre del fichero de entrada',
+                        required=True)
     parser.add_argument('--f_out',
                         nargs=1,
                         metavar='fichero',
                         help='Nombre del fichero de entrada')
 
     args = parser.parse_args()
-
-    if not args.f_in:
-        parser.error('Necesita especificar el fichero de entrada.')
-        exit(1)
 
     f_in = open(args.f_in[0], 'r')
     f_out = None
