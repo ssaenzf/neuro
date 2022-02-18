@@ -69,15 +69,12 @@ if __name__ == '__main__':
     red_McCulloch.inicializar()
     for row in f_in.readlines():
         row = row.replace('\n', '').split(' ')
-        red_McCulloch.inicializar()
         x1.inicializar(int(row[0]))
         x2.inicializar(int(row[1]))
-        red_McCulloch.propagar()
+
         red_McCulloch.disparar()
-        # print(capa_entrada)
-        # print(capa_oculta)
-        # print(capa_salida)
-        # text = '{}  {}  {}  {}  {}  {}\n'.format(row[0], row[1], z1.valor_salida, z2.valor_salida, y1.valor_salida, y2.valor_salida)
+        red_McCulloch.propagar()
+        
         text = '{}  {}  {}  {}  {}  {}\n'.format(x1.valor_salida, x2.valor_salida, z1.valor_salida, z2.valor_salida, y1.valor_salida, y2.valor_salida)
         # print(text)
         f_out.write(text) if f_out else stdout.write(text)

@@ -1,6 +1,4 @@
 from sys import stdout
-
-from yarl import cache_clear
 from redNeuronal.RedNeuronal import RedNeuronal
 from redNeuronal.Capa import Capa
 from redNeuronal.Neurona import Neurona
