@@ -177,7 +177,7 @@ if __name__ == '__main__':
     parser.add_argument('--f_out',
                         nargs=1,
                         metavar='fichero',
-                        help='Nombre del fichero de entrada')
+                        help='Nombre del fichero de salida')
 
     args = parser.parse_args()
 
