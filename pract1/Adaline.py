@@ -9,11 +9,12 @@ from leerFichero import LeerFichero
 class Adaline():
 
     # Funcion para la construccion de la red del perceptron
-    def __init__(self, umbral=0.0, alpha=1.0, tolerancia=0.0):
+    def __init__(self, umbral=0.0, alpha=1.0, tolerancia=0.0, epoca=100):
         self.perceptron = RedNeuronal()
         self.umbral = umbral
         self.alpha = alpha
         self.tolerancia = tolerancia
+        self.epoca = epoca
 
     def make_red(self, n_atributos, n_clases):
          # Neuronas capa entrada
@@ -55,7 +56,7 @@ class Adaline():
 
         # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-6
         parar = False
-        while not parar:
+        while not parar and epoca < self.epoca:
             # Se pone parar a True suponiendo que no va a actualizar durante la epoca
             parar = True
 
@@ -84,7 +85,7 @@ class Adaline():
                 
                 # Obtencion del error cuadratico medio
                 for neurona, t in zip(self.perceptron.capas[-1].neuronas, record_y):
-                    error_cuad_med += (neurona.valor_salida - t)**2
+                    error_cuad_med += (t - neurona.valor_salida)**2
                 
                 # Paso 5.a Ajuste de los pesos menos bias
                 for i in range(len(self.perceptron.capas[0].neuronas) - 1):
@@ -115,7 +116,7 @@ class Adaline():
                             cambio_peso = cambio
 
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
-            error_cuad_med = error_cuad_med/(len(record_y)*len(y_train))
+            error_cuad_med = error_cuad_med/(len(y_train))
             
             # Impresion por pantalla de epoca completada y error cuadratico medio
             print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
@@ -125,7 +126,7 @@ class Adaline():
                 parar = False
     
     # Funcion para la prediccion de la red del perceptron
-    def predecir(self, X_test, f_out):
+    def test(self, X_test, f_out):
         text = ""
         for i in range(len(self.perceptron.capas[0].neuronas) - 1):
             text += "X{}\t".format(i+1)
@@ -158,6 +159,15 @@ class Adaline():
                 text += "{:.2f}\t".format(neurona.valor_salida)
             text += '\n'
             f_out.write(text)
+        
+        weights = self.get_weights()
+        f_out.write(weights)
+    
+    def get_weights(self):
+        text = ""
+        for i in range(len(self.perceptron.capas[0].neuronas)):
+            text += "W{}: {}\t".format(i+1, self.perceptron.capas[0].neuronas[i].conexiones[-1].peso)
+        return text
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -188,20 +198,20 @@ if __name__ == '__main__':
 
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
-        adaline = Adaline(umbral=0.2, alpha=0.1, tolerancia=0.1)
+        adaline = Adaline(umbral=0.2, alpha=0.33, tolerancia=0.01)
         adaline.train(X_train, y_train)
-        adaline.predecir(X_test, f_out)
+        adaline.test(X_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
-        adaline = Adaline(umbral=0.2, alpha=1, tolerancia=0.1)
+        adaline = Adaline(umbral=0.2, alpha=0.33, tolerancia=0.001)
         adaline.train(X, y)
-        adaline.predecir(X, f_out)
+        adaline.test(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
-        adaline = Adaline(umbral=0.2, alpha=0.1, tolerancia=0.1)
+        adaline = Adaline(umbral=0.2, alpha=0.33, tolerancia=0.01)
         adaline.train(X_train, y_train)
-        adaline.predecir(X_test, f_out)
+        adaline.test(X_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)

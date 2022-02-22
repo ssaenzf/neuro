@@ -9,10 +9,11 @@ from leerFichero import LeerFichero
 class Perceptron():
 
     # Funcion para la construccion de la red del perceptron
-    def __init__(self, umbral=0.0, alpha=1.0):
+    def __init__(self, umbral=0.0, alpha=1.0, epoca=100):
         self.perceptron = RedNeuronal()
         self.umbral = umbral
         self.alpha = alpha
+        self.epoca = epoca
 
     def make_red(self, n_atributos, n_clases):
          # Neuronas capa entrada
@@ -54,7 +55,7 @@ class Perceptron():
 
         # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-6
         parar = False
-        while not parar:
+        while not parar and epoca < self.epoca:
             # Se pone parar a True suponiendo que no va a actualizar durante la epoca
             parar = True
 
@@ -88,11 +89,10 @@ class Perceptron():
                 # Obtención de las salidas y_in, de la capa de salida
                 self.perceptron.capas[-1].disparar()
                 
-                # Obtencion flag sobre si ha habido error o no en la prediccion para saber realizar el posterior ajuste 
-                # de pesos a las conexiones. Ademas obtencion del error cuadratico medio
+                # Calcular error cuadratico medio wij = Sumatorio(t_j - y_in_j)^2
                 error = False   # flag para saber si hay diferencia del valor predecido respecto al real
                 for neurona, t in zip(self.perceptron.capas[-1].neuronas, record_y):
-                    error_cuad_med += (neurona.valor_salida - t)**2
+                    error_cuad_med += (t - neurona.valor_salida)**2
                     if neurona.valor_salida != t:
                         error = True
                 
@@ -123,7 +123,7 @@ class Perceptron():
                             parar = False
             
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
-            error_cuad_med = error_cuad_med/(len(record_y)*len(y_train))
+            error_cuad_med = error_cuad_med/(len(y_train))
             
             # Impresion por pantalla de epoca completada y error cuadratico medio
             print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
@@ -131,7 +131,7 @@ class Perceptron():
             # Paso 6, si peso_actualizado = False, se termina el entrenamiento, sino vuelve al bucle while
     
     # Funcion para la prediccion de la red del perceptron
-    def predecir(self, X_test, f_out):
+    def test(self, X_test, f_out):
         text = ""
         for i in range(len(self.perceptron.capas[0].neuronas) - 1):
             text += "X{}\t".format(i+1)
@@ -164,6 +164,15 @@ class Perceptron():
                 text += "{:.2f}\t".format(neurona.valor_salida)
             text += '\n'
             f_out.write(text)
+        
+        weights = self.get_weights()
+        f_out.write(weights)
+
+    def get_weights(self):
+        text = ""
+        for i in range(len(self.perceptron.capas[0].neuronas)):
+            text += "W{}: {}\t".format(i+1, self.perceptron.capas[0].neuronas[i].conexiones[-1].peso)
+        return text
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -196,18 +205,18 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         perceptron = Perceptron(umbral=0.2, alpha=0.1)
         perceptron.train(X_train, y_train)
-        perceptron.predecir(X_test, f_out)
+        perceptron.test(X_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
         perceptron = Perceptron(umbral=0.2, alpha=1)
         perceptron.train(X, y)
-        perceptron.predecir(X, f_out)
+        perceptron.test(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         perceptron = Perceptron(umbral=0.2, alpha=0.1)
         perceptron.train(X_train, y_train)
-        perceptron.predecir(X_test, f_out)
+        perceptron.test(X_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)
