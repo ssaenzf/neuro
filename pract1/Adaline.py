@@ -172,8 +172,8 @@ if __name__ == '__main__':
                         help='Nombre del fichero de entrada')
     parser.add_argument('--modo3',
                         nargs=2,
-                        metavar=('train', 'test'),
-                        help='Nombre del fichero de entrada')
+                        metavar=('train_file', 'test_file'),
+                        help='Nombre del fichero de entrada para train y para test')
     parser.add_argument('--f_out',
                         nargs=1,
                         metavar='fichero',
