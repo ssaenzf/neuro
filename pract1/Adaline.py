@@ -103,8 +103,8 @@ class Adaline():
                         neurona_i.conexiones[j].peso_anterior = nuevo_peso
 
                         # Actualiza cambio peso si existe uno mayor
-                        if cambio_peso < cambio:
-                            cambio_peso = cambio
+                        if cambio_peso < abs(cambio):
+                            cambio_peso = abs(cambio)
 
                 # Paso 5.b Ajuste de los pesos en bias
                 bias_i = self.perceptron.capas[0].neuronas[i+1]
@@ -116,8 +116,8 @@ class Adaline():
                     bias_i.conexiones[j].peso_anterior = nuevo_peso
 
                     # Actualiza cambio peso si existe uno mayor
-                    if cambio_peso < cambio:
-                            cambio_peso = cambio
+                    if cambio_peso < abs(cambio):
+                            cambio_peso = abs(cambio)
 
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
             error_cuad_med = error_cuad_med/(len(y_train))
@@ -240,7 +240,7 @@ if __name__ == '__main__':
     
     umbral = float(args.umbral[0]) if args.umbral else 0.2
     alpha = float(args.alpha[0]) if args.alpha else 0.3
-    torelancia = float(args.torelancia[0]) if args.torelancia else 0.001
+    torelancia = float(args.torelancia[0]) if args.torelancia else 0.00001
     epoca = int(args.epoca[0]) if args.epoca else 100
 
     if args.modo1:

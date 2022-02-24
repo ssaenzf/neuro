@@ -24,7 +24,7 @@ class Neurona:
     def disparar(self):
         if self.tipo == Tipo.DIRECTA:
             self.valor_salida = self.valor_entrada
-        elif self.tipo == Tipo.SESGO:
+        elif self.tipo == Tipo.SESGOIGUAL or self.tipo == Tipo.SESGO:
             self.valor_salida = 1
         elif self.tipo == Tipo.MCCULLOCH:
             self.valor_salida = 1 if self.valor_entrada >= self.umbral else 0

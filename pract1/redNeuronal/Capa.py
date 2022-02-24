@@ -22,10 +22,10 @@ class Capa:
 
     def conectar_neurona(self, neurona, peso_min, peso_max):
         for mi_neu in self.neuronas:
-            if neurona.tipo == Tipo.ADALINE:
-                peso = uniform(peso_min, peso_max - peso_min).rvs()
+            if neurona.tipo == Tipo.MCCULLOCH or neurona.tipo == Tipo.SESGOIGUAL:
+                peso = 0
             else:
-                peso = peso_min
+                peso = uniform(peso_min, peso_max - peso_min).rvs()
             mi_neu.conectar(neurona, peso)
 
     def disparar(self):

@@ -23,7 +23,7 @@ class Perceptron():
             # Las neuronas de entrada, siempre directas ya que se limitan a retransmitir su entrada, por ello no tienen umbral
             neuronas_entrada.append(Neurona(umbral = 0.0, tipo=Tipo.DIRECTA))
         # Neurona correspondiente al bias
-        neuronas_entrada.append(Neurona(umbral = 0.0, tipo=Tipo.SESGO))
+        neuronas_entrada.append(Neurona(umbral = 0.0, tipo=Tipo.SESGOIGUAL))
 
         # Neuronas capa salida
         neuronas_salida = [] 
