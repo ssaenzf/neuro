@@ -1,11 +1,17 @@
 python McCulloch-Pitts.py --f_in data/entrada.txt --f_out salida.txt
 
-python perceptron.py --modo2 data/and.txt
-python perceptron.py --modo2 data/or.txt --f_out salida.txt
-python perceptron.py --modo2 data/nand.txt --f_out salida.txt
-python perceptron.py --modo2 data/xor.txt --f_out salida.txt
+python perceptron.py --modo2 data/and.txt --f_out output/and_output.txt
+python perceptron.py --modo2 data/or.txt --f_out output/or_output.txt
+python perceptron.py --modo2 data/nand.txt --f_out output/nand_output.txt
+python perceptron.py --modo2 data/xor.txt --f_out output/xor_output.txt
 
-python adaline.py --modo2 data/and.txt
+python adaline.py --modo2 data/and.txt --f_out output/and_output.txt
+python adaline.py --modo2 data/or.txt --f_out output/or_output.txt
+python adaline.py --modo2 data/nand.txt --f_out output/nand_output.txt
+python adaline.py --modo2 data/xor.txt --f_out output/xor_output.txt
+
+python perceptron.py --modo2 data/problema_real1.txt --f_out output/prob_real1_output.txt --umbral 0.2 --alpha 0.1 --epoca 100
+python adaline.py --modo2 data/problema_real1.txt --f_out output/prob_real1_output.txt --umbral 0.2 --alpha 0.1 --torelancia 0.01 --epoca 100
 
 Debug
 python perceptronZhijieDebug.py --modo2 data/and2.txt

@@ -5,6 +5,7 @@ from redNeuronal.Neurona import Neurona
 from redNeuronal.Tipo import Tipo
 import argparse
 from leerFichero import LeerFichero
+import matplotlib.pyplot as plt
 
 class Adaline():
 
@@ -49,6 +50,10 @@ class Adaline():
     def train(self, X_train, y_train):
         # Se crea la red del adaline
         self.make_red(X_train.shape[1], y_train.shape[1])
+
+        # Uso plot
+        X = []
+        Y = []
 
         # Paso 0, inicial todos los pesos y sesgo
         self.perceptron.inicializar()
@@ -120,10 +125,15 @@ class Adaline():
             
             # Impresion por pantalla de epoca completada y error cuadratico medio
             print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+            X.append(epoca)
+            Y.append(error_cuad_med)
             
             # Paso 6, si cambio_peso es menor que la torelancia, se termina, sino vuelve al bucle while
             if cambio_peso >= self.tolerancia:
                 parar = False
+
+        plt.plot(X, Y)
+        plt.show()
     
     # Funcion para la prediccion de la red del perceptron
     def test(self, X_test, f_out):
@@ -165,8 +175,11 @@ class Adaline():
     
     def get_weights(self):
         text = ""
-        for i in range(len(self.perceptron.capas[0].neuronas)):
-            text += "W{}: {}\t".format(i+1, self.perceptron.capas[0].neuronas[i].conexiones[-1].peso)
+        for j in range(len(self.perceptron.capas[-1].neuronas)):
+            text += "Y{}\t".format(j+1)
+            for i in range(len(self.perceptron.capas[0].neuronas)):
+                text += "W{}: {:.5f}\t".format(i+1, self.perceptron.capas[0].neuronas[i].conexiones[j].peso)
+            text += "\n"
         return text
 
 if __name__ == '__main__':
@@ -188,6 +201,22 @@ if __name__ == '__main__':
                         nargs=1,
                         metavar='fichero',
                         help='Nombre del fichero de salida')
+    parser.add_argument('--umbral',
+                        nargs=1,
+                        metavar='umbral',
+                        help='Umbral de la red')
+    parser.add_argument('--alpha',
+                        nargs=1,
+                        metavar='alpha',
+                        help='Tasa de aprendizaje de la red')
+    parser.add_argument('--torelancia',
+                        nargs=1,
+                        metavar='torelancia',
+                        help='Torelancia de la red')
+    parser.add_argument('--epoca',
+                        nargs=1,
+                        metavar='epoca',
+                        help='Num de epoca de la red')
 
     args = parser.parse_args()
 
@@ -195,21 +224,26 @@ if __name__ == '__main__':
         f_out = stdout
     else:
         f_out = open(args.f_out[0], 'w')
+    
+    umbral = float(args.umbral[0]) if args.umbral else 0.2
+    alpha = float(args.alpha[0]) if args.alpha else 0.3
+    torelancia = float(args.torelancia[0]) if args.torelancia else 0.001
+    epoca = int(args.epoca[0]) if args.epoca else 100
 
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
-        adaline = Adaline(umbral=0.2, alpha=0.33, tolerancia=0.01)
+        adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
         adaline.test(X_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
-        adaline = Adaline(umbral=0.2, alpha=0.33, tolerancia=0.001)
+        adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X, y)
         adaline.test(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
-        adaline = Adaline(umbral=0.2, alpha=0.33, tolerancia=0.01)
+        adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
         adaline.test(X_test, f_out)
     else:

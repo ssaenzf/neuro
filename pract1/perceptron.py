@@ -5,6 +5,7 @@ from redNeuronal.Neurona import Neurona
 from redNeuronal.Tipo import Tipo
 import argparse
 from leerFichero import LeerFichero
+import matplotlib.pyplot as plt
 
 class Perceptron():
 
@@ -48,6 +49,10 @@ class Perceptron():
     def train(self, X_train, y_train):
         # Se crea la red del perceptron
         self.make_red(X_train.shape[1], y_train.shape[1])
+
+        # Uso plot
+        X = []
+        Y = []
 
         # Paso 0, inicial todos los pesos y sesgo
         self.perceptron.inicializar()
@@ -127,8 +132,12 @@ class Perceptron():
             
             # Impresion por pantalla de epoca completada y error cuadratico medio
             print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+            X.append(epoca)
+            Y.append(error_cuad_med)
             
             # Paso 6, si peso_actualizado = False, se termina el entrenamiento, sino vuelve al bucle while
+        plt.plot(X, Y)
+        plt.show()
     
     # Funcion para la prediccion de la red del perceptron
     def test(self, X_test, f_out):
@@ -170,8 +179,11 @@ class Perceptron():
 
     def get_weights(self):
         text = ""
-        for i in range(len(self.perceptron.capas[0].neuronas)):
-            text += "W{}: {}\t".format(i+1, self.perceptron.capas[0].neuronas[i].conexiones[-1].peso)
+        for j in range(len(self.perceptron.capas[-1].neuronas)):
+            text += "Y{}\t".format(j+1)
+            for i in range(len(self.perceptron.capas[0].neuronas)):
+                text += "W{}: {:.4f}\t".format(i+1, self.perceptron.capas[0].neuronas[i].conexiones[j].peso)
+            text += "\n"
         return text
 
 if __name__ == '__main__':
@@ -193,6 +205,18 @@ if __name__ == '__main__':
                         nargs=1,
                         metavar='fichero',
                         help='Nombre del fichero de salida')
+    parser.add_argument('--umbral',
+                        nargs=1,
+                        metavar='umbral',
+                        help='Umbral de la red')
+    parser.add_argument('--alpha',
+                        nargs=1,
+                        metavar='alpha',
+                        help='Tasa de aprendizaje de la red')
+    parser.add_argument('--epoca',
+                        nargs=1,
+                        metavar='epoca',
+                        help='Num de epoca de la red')
 
     args = parser.parse_args()
 
@@ -200,21 +224,25 @@ if __name__ == '__main__':
         f_out = stdout
     else:
         f_out = open(args.f_out[0], 'w')
+    
+    umbral = float(args.umbral[0]) if args.umbral else 0.2
+    alpha = float(args.alpha[0]) if args.alpha else 1
+    epoca = int(args.epoca[0]) if args.epoca else 100
 
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
-        perceptron = Perceptron(umbral=0.2, alpha=0.1)
+        perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
         perceptron.test(X_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
-        perceptron = Perceptron(umbral=0.2, alpha=1)
+        perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X, y)
         perceptron.test(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
-        perceptron = Perceptron(umbral=0.2, alpha=0.1)
+        perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
         perceptron.test(X_test, f_out)
     else:
