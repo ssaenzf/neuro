@@ -30,11 +30,6 @@ class Perceptron():
         for i in range(n_clases):
             neuronas_salida.append(Neurona(umbral = self.umbral, tipo=Tipo.PERCEPTRON))  # Se aniade el umbral especificado
         
-        # Conexiones. Todas las neuronas de la capa de entrada se conectan con todas las neuronas de la capa de salida
-        for i in range(n_atributos + 1): # + 1 debido a que hay que conectar el bias a todas las neuronas de la capa de salida tambien
-            for j in range(n_clases):
-                neuronas_entrada[i].conectar(neuronas_salida[j], 0) # Pesos de las conexiones inicialmente a 0
-
         # Creacion capas y anidamiento de neuronas en estas, y anidamiento capas dentro de la red neuronal perceptron
         capa_entrada = Capa()
         capa_salida = Capa()
@@ -44,6 +39,10 @@ class Perceptron():
             capa_salida.aniadir(neuronas_salida[i])
         self.perceptron.aniadir(capa_entrada)
         self.perceptron.aniadir(capa_salida)
+
+        # Conexiones entre capas. -1 porque el ultimo no tiene conexiones 
+        for i in range(len(self.perceptron.capas) - 1):
+            self.perceptron.capas[i].conectar(self.perceptron.capas[i+1], 0 , 0)
 
     # Funcion para la realizacion del entrenamiento por el perceptron
     def train(self, X_train, y_train):
@@ -131,7 +130,7 @@ class Perceptron():
             error_cuad_med = error_cuad_med/(len(y_train))
             
             # Impresion por pantalla de epoca completada y error cuadratico medio
-            print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+            # print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
             X.append(epoca)
             Y.append(error_cuad_med)
             
@@ -140,7 +139,7 @@ class Perceptron():
         plt.show()
     
     # Funcion para la prediccion de la red del perceptron
-    def test(self, X_test, f_out):
+    def test(self, X_test, y_test, f_out):
         text = ""
         for i in range(len(self.perceptron.capas[0].neuronas) - 1):
             text += "X{}\t".format(i+1)
@@ -152,8 +151,10 @@ class Perceptron():
         # Vacia todas las entradas de la red
         self.perceptron.inicializar()
 
+        n_acierto = 0
         # Se ejecuta uno a uno el calcula y prediccion para cada registro de entrada
-        for x in X_test:
+        for index in range(len(X_test)):
+            x = X_test[index]
             # Las neuronas de entrada se inicializan con el valor de entrada a la red, salvo el bias que tiene valor 1 por defecto
             for i in range(len(self.perceptron.capas[0].neuronas) - 1):
                 self.perceptron.capas[0].neuronas[i].inicializar(x[i])
@@ -167,15 +168,26 @@ class Perceptron():
 
             # Se recorren las neuronas de salida recolectando el valor que dan
             text = ''
-            for neurona in self.perceptron.capas[-1].neuronas:
-                for x_i in x:
-                    text += "{}\t".format(x_i)
-                text += "{:.2f}\t".format(neurona.valor_salida)
+            for x_i in x:
+                text += "{}\t".format(x_i)
+
+            error = False
+            for j in range(len(self.perceptron.capas[-1].neuronas)):
+                y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
+                text += "{:.2f}\t".format(y_in)
+
+                if y_in != y_test[index][j]:
+                    error = True
+            
+            if not error:
+                n_acierto += 1
+
             text += '\n'
             f_out.write(text)
         
         weights = self.get_weights()
         f_out.write(weights)
+        f_out.write("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y_test)*100))
 
     def get_weights(self):
         text = ""
@@ -233,18 +245,18 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
-        perceptron.test(X_test, f_out)
+        perceptron.test(X_test, y_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X, y)
-        perceptron.test(X, f_out)
+        perceptron.test(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
-        perceptron.test(X_test, f_out)
+        perceptron.test(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)
