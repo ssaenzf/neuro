@@ -137,9 +137,10 @@ class Perceptron():
             Y.append(error_cuad_med)
             
             # Paso 6, si peso_actualizado = False, se termina el entrenamiento, sino vuelve al bucle while
+        """
         plt.plot(X, Y)
         plt.show()
-    
+        """
     # Funcion para la prediccion de la red del perceptron
     def test(self, X_test, y_test, f_out):
         text = ""
@@ -190,6 +191,7 @@ class Perceptron():
             f_out.write(text)
         
         weights = self.get_weights()
+        f_out.write(weights)
         f_out.write(weights)
         f_out.write("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y_test)*100))
 

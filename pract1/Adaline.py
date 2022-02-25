@@ -135,10 +135,10 @@ class Adaline():
             # Paso 6, si cambio_peso es menor que la torelancia, se termina, sino vuelve al bucle while
             if cambio_peso >= self.tolerancia:
                 parar = False
-
+        """
         plt.plot(X, Y)
         plt.show()
-    
+        """
     # Funcion para la prediccion de la red del perceptron
     def test(self, X_test, y_test, f_out):
         text = ""
