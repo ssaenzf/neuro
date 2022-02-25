@@ -73,6 +73,7 @@ if __name__ == '__main__':
         x2.inicializar(int(row[1]))
 
         red_McCulloch.disparar()
+        red_McCulloch.inicializar()
         red_McCulloch.propagar()
         
         text = '{}  {}  {}  {}  {}  {}\n'.format(x1.valor_salida, x2.valor_salida, z1.valor_salida, z2.valor_salida, y1.valor_salida, y2.valor_salida)

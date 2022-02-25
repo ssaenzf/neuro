@@ -88,10 +88,12 @@ class Perceptron():
                 
                 # Paso 4, calcular la respuesta de cada neurona de salida y_in
                 self.perceptron.capas[0].disparar()
+                self.perceptron.capas[0].inicializar()
                 self.perceptron.capas[0].propagar()
 
-                # Obtención de las salidas y_in, de la capa de salida
+                # Obtención de las salidas f(y_in), de la capa de salida
                 self.perceptron.capas[-1].disparar()
+                self.perceptron.capas[-1].inicializar()
                 
                 # Calcular error cuadratico medio wij = Sumatorio(t_j - y_in_j)^2
                 error = False   # flag para saber si hay diferencia del valor predecido respecto al real
@@ -161,10 +163,12 @@ class Perceptron():
             
             # Calcula la respuesta de cada neurona de salida y_in
             self.perceptron.capas[0].disparar()
+            self.perceptron.capas[0].inicializar()
             self.perceptron.capas[0].propagar()
 
             # Obtención de las salidas y_in, de la capa de salida
             self.perceptron.capas[-1].disparar()
+            self.perceptron.capas[-1].inicializar()
 
             # Se recorren las neuronas de salida recolectando el valor que dan
             text = ''

@@ -82,9 +82,11 @@ class Adaline():
                 
                 # Paso 4, calcular la respuesta de cada neurona de salida y_in
                 self.perceptron.capas[0].disparar()
+                self.perceptron.capas[0].inicializar()
                 self.perceptron.capas[0].propagar()
 
-                # Obtención de las salidas y_in, de la capa de salida
+                # Obtención de las salidas f(y_in), de la capa de salida
+                # No se inicializa esta capa del momento, ya que necesita utilizar y_in para ajustar los pesos
                 self.perceptron.capas[-1].disparar()
                 
                 # Obtencion del error cuadratico medio
@@ -96,7 +98,7 @@ class Adaline():
                     neurona_i = self.perceptron.capas[0].neuronas[i]
                     # Conexiones de la neurona en cuestion
                     for j in range(len(self.perceptron.capas[-1].neuronas)):
-                        y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
+                        y_in = self.perceptron.capas[-1].neuronas[j].valor_entrada
                         cambio = self.alpha * (record_y[j] - y_in) * record_x[i]
                         nuevo_peso = neurona_i.conexiones[j].peso_anterior + cambio
                         neurona_i.conexiones[j].peso = nuevo_peso
@@ -109,7 +111,7 @@ class Adaline():
                 # Paso 5.b Ajuste de los pesos en bias
                 bias_i = self.perceptron.capas[0].neuronas[i+1]
                 for j in range(len(self.perceptron.capas[-1].neuronas)):
-                    y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
+                    y_in = self.perceptron.capas[-1].neuronas[j].valor_entrada
                     cambio = self.alpha * (record_y[j] - y_in)
                     nuevo_peso = bias_i.conexiones[j].peso_anterior + cambio
                     bias_i.conexiones[j].peso = nuevo_peso
@@ -118,6 +120,9 @@ class Adaline():
                     # Actualiza cambio peso si existe uno mayor
                     if cambio_peso < abs(cambio):
                             cambio_peso = abs(cambio)
+                
+                # Ahora se inicializa la entrada de las neuronas para proximas propagaciones
+                self.perceptron.capas[-1].inicializar()
 
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
             error_cuad_med = error_cuad_med/(len(y_train))
@@ -158,10 +163,12 @@ class Adaline():
             
             # Calcula la respuesta de cada neurona de salida y_in
             self.perceptron.capas[0].disparar()
+            self.perceptron.capas[0].inicializar()
             self.perceptron.capas[0].propagar()
 
             # Obtención de las salidas y_in, de la capa de salida
             self.perceptron.capas[-1].disparar()
+            self.perceptron.capas[-1].inicializar()
 
             # Se recorren las neuronas de salida recolectando el valor que dan
             text = ''
@@ -240,7 +247,7 @@ if __name__ == '__main__':
     
     umbral = float(args.umbral[0]) if args.umbral else 0.2
     alpha = float(args.alpha[0]) if args.alpha else 0.3
-    torelancia = float(args.torelancia[0]) if args.torelancia else 0.00001
+    torelancia = float(args.torelancia[0]) if args.torelancia else 0.22
     epoca = int(args.epoca[0]) if args.epoca else 100
 
     if args.modo1:
