@@ -139,7 +139,8 @@ class Adaline():
         plt.plot(X, Y)
         plt.show()
         """
-    # Funcion para la prediccion de la red del perceptron
+
+    # Funcion para la prediccion de la red del adaliene
     def test(self, X_test, y_test, f_out):
         text = ""
         for i in range(len(self.perceptron.capas[0].neuronas) - 1):
@@ -192,6 +193,41 @@ class Adaline():
         weights = self.get_weights()
         f_out.write(weights)
         f_out.write("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y_test)*100))
+
+    # Funcion para imprimir el score de la red del adaline
+    def score(self, X, y):
+        # Vacia todas las entradas de la red
+        self.perceptron.inicializar()
+
+        n_acierto = 0
+        # Se ejecuta uno a uno el calcula y prediccion para cada registro de entrada
+        for index in range(len(X)):
+            x = X[index]
+            # Las neuronas de entrada se inicializan con el valor de entrada a la red, salvo el bias que tiene valor 1 por defecto
+            for i in range(len(self.perceptron.capas[0].neuronas) - 1):
+                self.perceptron.capas[0].neuronas[i].inicializar(x[i])
+            
+            # Calcula la respuesta de cada neurona de salida y_in
+            self.perceptron.capas[0].disparar()
+            self.perceptron.capas[0].inicializar()
+            self.perceptron.capas[0].propagar()
+
+            # Obtención de las salidas y_in, de la capa de salida
+            self.perceptron.capas[-1].disparar()
+            self.perceptron.capas[-1].inicializar()
+
+
+            error = False
+            for j in range(len(self.perceptron.capas[-1].neuronas)):
+                y_in = self.perceptron.capas[-1].neuronas[j].valor_salida
+
+                if y_in != y[index][j]:
+                    error = True
+            
+            if not error:
+                n_acierto += 1
+        
+        print("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y)*100))
     
     def get_weights(self):
         text = ""
@@ -254,17 +290,20 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
+        # adaline.score(X_train, y_train)
         adaline.test(X_test, y_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X, y)
+        # adaline.score(X, y)
         adaline.test(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
+        # adaline.score(X_train, y_train)
         adaline.test(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
