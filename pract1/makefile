@@ -1,5 +1,6 @@
 DATA := data/
 OUTPUT := output/
+PREDICCION := predicciones/
 
 # Estilos que se utilizan para mostrar mensajes en el terminal
 GREEN = \033[0;32m
@@ -10,7 +11,7 @@ BOLD = \033[1m
 all: mkdir ayuda_mp compila_mp ejecuta_mp compilar ayuda_perceptron ejecuta_perceptron ayuda_adaline ejecuta_adaline ejecuta_perceptron2 ejecuta_adaline2
 
 mkdir:
-	@mkdir -p $(OUTPUT)
+	@mkdir -p $(OUTPUT) $(PREDICCION)
 
 # McCulloch-Pitts
 ayuda_mp:
@@ -57,12 +58,12 @@ ejecuta_adaline:
 # Perceptron y Adaline Problema Real 2
 ejecuta_perceptron2:
 	@echo "Ejecutando el script Perceptron. Problema real 2."
-	python3 perceptron.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(OUTPUT)problema_real2_per.txt --umbral 0.1 --alpha 0.025 --epoca 400
+	python3 perceptron.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(PREDICCION)prediccion_perceptron.txt --umbral 0.1 --alpha 0.025 --epoca 400
 	@echo ""
 
 ejecuta_adaline2:
 	@echo "Ejecutando el script Adaline. Problema real 2."
-	python3 adaline.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(OUTPUT)problema_real2_ada.txt --umbral 0.1 --alpha 0.025 --torelancia 0.1
+	python3 adaline.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(PREDICCION)prediccion_adaline.txt --umbral 0.1 --alpha 0.025 --torelancia 0.1
 	@echo ""
 
 clean:
