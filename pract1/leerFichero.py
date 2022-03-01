@@ -21,9 +21,6 @@ class LeerFichero:
         y = np.array(y, dtype=int)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=float(porcion))
 
-        print(X.shape, y.shape)
-        print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-        print(X_train[0], y_train[0])
         return X_train, X_test, y_train, y_test
 
     @staticmethod
@@ -62,7 +59,7 @@ class LeerFichero:
         n_atr = int(n_atr)
         n_class = int(n_class)
         X_test, y_test = [], []
-        for row in f_train.readlines():
+        for row in f_test.readlines():
             row = row.replace('\n', '').split()
             X_test.append(row[:-n_class])
             y_test.append(row[-n_class:])

@@ -192,7 +192,6 @@ class Perceptron():
         
         weights = self.get_weights()
         f_out.write(weights)
-        f_out.write(weights)
         f_out.write("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y_test)*100))
 
     def get_weights(self):
