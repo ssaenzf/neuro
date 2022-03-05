@@ -288,22 +288,20 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        
         adaline.test(X_test, y_test, f_out)
-        adaline.score(X_test, y_test)
+        # adaline.score(X_test, y_test)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X, y)
-        # adaline.score(X, y)
         adaline.test(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        # adaline.score(X_train, y_train)
         adaline.test(X_test, y_test, f_out)
+        # adaline.score(X_train, y_train)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)

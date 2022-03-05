@@ -282,22 +282,20 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
-        
         perceptron.test(X_test, y_test, f_out)
-        perceptron.score(X_test, y_test)
+        # perceptron.score(X_test, y_test)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X, y)
-        # perceptron.score(X, y)
         perceptron.test(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
-        # perceptron.score(X_train, y_train)
         perceptron.test(X_test, y_test, f_out)
+        # perceptron.score(X_train, y_train)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)
