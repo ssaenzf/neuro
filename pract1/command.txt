@@ -23,3 +23,4 @@ python3 adaline.py --modo3 data/problema_real2.txt data/problema_real2_no_etique
 
 Debug
 python perceptronZhijieDebug.py --modo2 data/and2.txt
+python adaline.py --modo2 data/problemaSolo1.txt --f_out output/problemaSolo1.txt --umbral 0.1 --alpha 1 --torelancia 0.01 --epoca 100

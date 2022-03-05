@@ -109,9 +109,8 @@ class Perceptron():
                         neurona_i = self.perceptron.capas[0].neuronas[i]
                         # Conexiones de la neurona en cuestion
                         for j in range(len(self.perceptron.capas[-1].neuronas)):
-                            nuevo_peso = neurona_i.conexiones[j].peso_anterior + self.alpha * record_y[j] * record_x[i]
+                            nuevo_peso = neurona_i.conexiones[j].peso + self.alpha * record_y[j] * record_x[i]
                             neurona_i.conexiones[j].peso = nuevo_peso
-                            neurona_i.conexiones[j].peso_anterior = nuevo_peso
 
                             # Si hay algun cambio en los pesos respecto anterior, se actualiza el flag
                             if ultimo_pesos[j][i] != nuevo_peso:
@@ -120,9 +119,8 @@ class Perceptron():
                     # Paso 5.b Ajuste de los pesos en bias
                     bias_i = self.perceptron.capas[0].neuronas[i+1]
                     for j in range(len(self.perceptron.capas[-1].neuronas)):
-                        nuevo_peso = bias_i.conexiones[j].peso_anterior + self.alpha * record_y[j]
+                        nuevo_peso = bias_i.conexiones[j].peso + self.alpha * record_y[j]
                         bias_i.conexiones[j].peso = nuevo_peso
-                        bias_i.conexiones[j].peso_anterior = nuevo_peso
 
                         # Si hay algun cambio en los pesos respecto anterior, se actualiza el flag
                         if ultimo_pesos[j][i] != nuevo_peso:

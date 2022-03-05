@@ -100,9 +100,9 @@ class Adaline():
                     for j in range(len(self.red.capas[-1].neuronas)):
                         y_in = self.red.capas[-1].neuronas[j].valor_entrada
                         cambio = self.alpha * (record_y[j] - y_in) * record_x[i]
-                        nuevo_peso = neurona_i.conexiones[j].peso_anterior + cambio
+                        
+                        nuevo_peso = neurona_i.conexiones[j].peso + cambio
                         neurona_i.conexiones[j].peso = nuevo_peso
-                        neurona_i.conexiones[j].peso_anterior = nuevo_peso
 
                         # Actualiza cambio peso si existe uno mayor
                         if cambio_peso < abs(cambio):
@@ -113,9 +113,8 @@ class Adaline():
                 for j in range(len(self.red.capas[-1].neuronas)):
                     y_in = self.red.capas[-1].neuronas[j].valor_entrada
                     cambio = self.alpha * (record_y[j] - y_in)
-                    nuevo_peso = bias_i.conexiones[j].peso_anterior + cambio
+                    nuevo_peso = bias_i.conexiones[j].peso + cambio
                     bias_i.conexiones[j].peso = nuevo_peso
-                    bias_i.conexiones[j].peso_anterior = nuevo_peso
 
                     # Actualiza cambio peso si existe uno mayor
                     if cambio_peso < abs(cambio):
