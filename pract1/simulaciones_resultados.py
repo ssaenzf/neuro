@@ -42,4 +42,4 @@ plt.show()
 
 """
 for epoca in [10, 20, 40, 60, 80, 120, 200, 300, 500, 700]:
-    os.system(f'python perceptron.py --modo1 data/problema_real1.txt 0.8 --f_out output/caca.txt --umbral 0.1 --alpha 0.125 --epoca {epoca}')
+    os.system(f'python3 perceptron.py --modo1 data/problema_real1.txt 0.2 --umbral 0.25 --alpha 0.125 --epoca {epoca}')

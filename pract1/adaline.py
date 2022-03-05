@@ -119,7 +119,7 @@ class Adaline():
 
                     # Actualiza cambio peso si existe uno mayor
                     if cambio_peso < abs(cambio):
-                            cambio_peso = abs(cambio)
+                        cambio_peso = abs(cambio)
                 
                 # Ahora se inicializa la entrada de las neuronas para proximas propagaciones
                 self.red.capas[-1].inicializar()
@@ -135,10 +135,9 @@ class Adaline():
             # Paso 6, si cambio_peso es menor que la torelancia, se termina, sino vuelve al bucle while
             if cambio_peso >= self.tolerancia:
                 parar = False
-        """
-        plt.plot(X, Y)
-        plt.show()
-        """
+
+        # plt.plot(X, Y)
+        # plt.show()
 
     # Funcion para la prediccion de la red del adaliene
     def test(self, X_test, y_test, f_out):
@@ -290,7 +289,7 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        adaline.score(X_train, y_train)
+        # adaline.score(X_train, y_train)
         adaline.test(X_test, y_test, f_out)
 
     elif args.modo2:
@@ -303,7 +302,7 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        adaline.score(X_train, y_train)
+        # adaline.score(X_train, y_train)
         adaline.test(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")

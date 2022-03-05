@@ -137,10 +137,9 @@ class Perceptron():
             Y.append(error_cuad_med)
             
             # Paso 6, si peso_actualizado = False, se termina el entrenamiento, sino vuelve al bucle while
-        """
-        plt.plot(X, Y)
-        plt.show()
-        """
+        # plt.plot(X, Y)
+        # plt.show()
+
     # Funcion para la prediccion de la red del perceptron
     def test(self, X_test, y_test, f_out):
         text = ""
@@ -285,7 +284,7 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
-        perceptron.score(X_train, y_train)
+        # perceptron.score(X_train, y_train)
         perceptron.test(X_test, y_test, f_out)
 
     elif args.modo2:
@@ -298,7 +297,7 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         perceptron = Perceptron(umbral=umbral, alpha=alpha, epoca=epoca)
         perceptron.train(X_train, y_train)
-        perceptron.score(X_train, y_train)
+        # perceptron.score(X_train, y_train)
         perceptron.test(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
