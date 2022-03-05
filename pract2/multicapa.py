@@ -7,38 +7,44 @@ import argparse
 from leerFichero import LeerFichero
 import matplotlib.pyplot as plt
 
-class Adaline():
+class Multicapa():
 
-    # Funcion para la construccion de la red del Adaline
-    def __init__(self, umbral=0.0, alpha=1.0, tolerancia=0.0, epoca=100):
+    # Funcion para la construccion de la red del red
+    def __init__(self, alpha=1.0, tipo=Tipo.SIGMOIDE, tolerancia=0.0, epoca=100):
         self.red = RedNeuronal()
-        self.umbral = umbral
         self.alpha = alpha
+        self.tipo = tipo
         self.tolerancia = tolerancia
         self.epoca = epoca
 
+    # TODO: cambiar esto cuando se sabe como son las entradas
     def make_red(self, n_atributos, n_clases):
-         # Neuronas capa entrada
-        neuronas_entrada = []
-        for i in range(0, n_atributos):
-            # Las neuronas de entrada, siempre directas ya que se limitan a retransmitir su entrada, por ello no tienen umbral
-            neuronas_entrada.append(Neurona(umbral = 0.0, tipo=Tipo.DIRECTA))
-        # Neurona correspondiente al bias
-        neuronas_entrada.append(Neurona(umbral = 0.0, tipo=Tipo.SESGO))
-
-        # Neuronas capa salida
-        neuronas_salida = [] 
-        for i in range(n_clases):
-            neuronas_salida.append(Neurona(umbral = self.umbral, tipo=Tipo.ADALINE))  # Se aniade el umbral especificado
-        
-        # Creacion capas y anidamiento de neuronas en estas, y anidamiento capas dentro de la red neuronal red
+        # Capa entrada
         capa_entrada = Capa()
+        # Neurona correspondiente al bias
+        capa_entrada.aniadir(Neurona(tipo=Tipo.SESGO))
+        for i in range(n_atributos):
+            # Las neuronas de entrada, siempre directas ya que se limitan a retransmitir su entrada, por ello no tienen umbral
+            capa_entrada.aniadir(Neurona(tipo=Tipo.DIRECTA))
+        
+        # Capas ocultas
+        capas_ocultas = []
+        for i in range(2):
+            capa_oculta = Capa()
+            capa_oculta.aniadir(Neurona(tipo=Tipo.SESGO))
+            for i in range(n_atributos):
+                capa_oculta.aniadir(Neurona(tipo=self.tipo))
+            capas_ocultas.append(capa_oculta)
+
+        # Capa salida
         capa_salida = Capa()
-        for i in range(n_atributos + 1): # + 1 debido a que en la capa de entrada se aniade tambien el bias
-            capa_entrada.aniadir(neuronas_entrada[i])
-        for i in range(n_clases): 
-            capa_salida.aniadir(neuronas_salida[i])
+        for i in range(n_clases):
+            capa_salida.aniadir(Neurona(tipo=self.tipo))
+        
+        # Se añaden las capas a la red
         self.red.aniadir(capa_entrada)
+        for capa_oculta in capas_ocultas:
+            self.red.aniadir(capa_oculta)
         self.red.aniadir(capa_salida)
 
         # Conexiones entre capas. -1 porque el ultimo no tiene conexiones 
@@ -50,15 +56,15 @@ class Adaline():
         # Se crea la red del adaline
         self.make_red(X_train.shape[1], y_train.shape[1])
 
-        # Uso plot
-        X = []
-        Y = []
+        # # Uso plot
+        # X = []
+        # Y = []
 
         # Paso 0, inicial todos los pesos y sesgo
         self.red.inicializar()
         epoca = 0
 
-        # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-6
+        # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-9
         parar = False
         while not parar and epoca < self.epoca:
             # Se pone parar a True suponiendo que no va a actualizar durante la epoca
@@ -68,10 +74,7 @@ class Adaline():
             epoca += 1
             error_cuad_med = 0
 
-            # Inicializar cambio de peso a 0 para condicion de parada
-            cambio_peso = 0
-
-            # Paso 2, para cada par de entrenamiento, ejecutar paso 3-5
+            # Paso 2, para cada par de entrenamiento, ejecutar paso 3-8
             for m in range(len(y_train)):
                 record_x = X_train[m]
                 record_y = y_train[m]
@@ -80,61 +83,108 @@ class Adaline():
                 for i in range(len(self.red.capas[0].neuronas) - 1):
                     self.red.capas[0].neuronas[i].inicializar(record_x[i])
                 
-                # Paso 4, calcular la respuesta de cada neurona de salida y_in
-                self.red.capas[0].disparar()
-                self.red.capas[0].inicializar()
-                self.red.capas[0].propagar()
+                # Paso 4, calcular la respuesta de las neuronas de las capas ocultas
+                for capa in self.red.capas[:-1]:
+                    capa.disparar()
+                    capa.inicializar()
+                    capa.propagar()
 
-                # Obtención de las salidas f(y_in), de la capa de salida
+                # Paso 5, calcular la respuesta de las neuronas de la capa de salida
                 # No se inicializa esta capa del momento, ya que necesita utilizar y_in para ajustar los pesos
                 self.red.capas[-1].disparar()
+
+                # Paso 6, cada neurona de salida Yk recibe un patron objetivo que corresponde al patron de entrada
+                sigmas_k = []
+                deltas_w = []
+                for k in range(len(self.red.capas[-1].neuronas)):
+                    y_k = self.red.capas[-1].neuronas[k].valor_salida
+                    if self.tipo == Tipo.SIGMOIDE:
+                        sigma_k = (record_y[k] - y_k) * y_k * (1 - y_k)
+                    else:
+                        # sigmoide bipolar
+                        sigma_k = (record_y[k] - y_k) * 1/2 *  y_k * (1 - y_k)
+                    sigmas_k.append(sigma_k)
+                    
+                    # delta_w_0k es la bias
+                    delta_w_0k = self.alpha*sigma_k
+                    deltas_w.append(delta_w_0k)
+
+                    for neurona in self.red.capas[-2].neuronas[1:]:
+                        # delta_w_jk es el peso de la neurona de entrada j
+                        delta_w_jk = self.alpha * sigma_k * neurona.valor_salida
+                        deltas_w.append(delta_w_jk)
                 
-                # Obtencion del error cuadratico medio
-                for neurona, t in zip(self.red.capas[-1].neuronas, record_y):
-                    error_cuad_med += (t - neurona.valor_salida)**2
+                # Paso 7 y 8, retropropagacion hacia atras de X capas hasta las conexiones de capa de entrada
+                # Si list = [1,2,3,4,5], list[-2::-1] quiere decir desde ele -2, contar hacia delante, osea devuelve 4,3,2,1
+                capas_retro = self.red.capas[-2::-1]
+                for i in range(len(capas_retro)):
+                    sigmas_in = []
+                    capa = capas_retro[i]
+                    
+                    for k in range(sigmas_k):
+                        sigmas_j = []
+                        deltas_v = []
+                        sigma_k = sigmas_k[k]
+                        for neurona in capa.neuronas:
+                            sigma_in += sigma_k * neurona.conexiones[k].peso
+                        
+                        if self.tipo == Tipo.SIGMOIDE:
+                            sigma_j = sigma_in * neurona.valor_salida * (1 - neurona.valor_salida)
+                        else:
+                            # sigmoide bipolar
+                            sigma_j = sigma_in * neurona.valor_salida * 1/2 *  (1 - neurona.valor_salida)
+                        sigmas_j.append(sigma_j)
+
+
+                        
+
                 
-                # Paso 5.a Ajuste de los pesos menos bias
-                for i in range(len(self.red.capas[0].neuronas) - 1):
-                    neurona_i = self.red.capas[0].neuronas[i]
-                    # Conexiones de la neurona en cuestion
-                    for j in range(len(self.red.capas[-1].neuronas)):
-                        y_in = self.red.capas[-1].neuronas[j].valor_entrada
-                        cambio = self.alpha * (record_y[j] - y_in) * record_x[i]
-                        nuevo_peso = neurona_i.conexiones[j].peso_anterior + cambio
-                        neurona_i.conexiones[j].peso = nuevo_peso
-                        neurona_i.conexiones[j].peso_anterior = nuevo_peso
+        #         # Obtencion del error cuadratico medio
+        #         for neurona, t in zip(self.red.capas[-1].neuronas, record_y):
+        #             error_cuad_med += (t - neurona.valor_salida)**2
+                
+        #         # Paso 5.a Ajuste de los pesos menos bias
+        #         for i in range(len(self.red.capas[0].neuronas) - 1):
+        #             neurona_i = self.red.capas[0].neuronas[i]
+        #             # Conexiones de la neurona en cuestion
+        #             for j in range(len(self.red.capas[-1].neuronas)):
+        #                 y_in = self.red.capas[-1].neuronas[j].valor_entrada
+        #                 cambio = self.alpha * (record_y[j] - y_in) * record_x[i]
+        #                 nuevo_peso = neurona_i.conexiones[j].peso_anterior + cambio
+        #                 neurona_i.conexiones[j].peso = nuevo_peso
+        #                 neurona_i.conexiones[j].peso_anterior = nuevo_peso
 
-                        # Actualiza cambio peso si existe uno mayor
-                        if cambio_peso < abs(cambio):
-                            cambio_peso = abs(cambio)
+        #                 # Actualiza cambio peso si existe uno mayor
+        #                 if cambio_peso < abs(cambio):
+        #                     cambio_peso = abs(cambio)
 
-                # Paso 5.b Ajuste de los pesos en bias
-                bias_i = self.red.capas[0].neuronas[i+1]
-                for j in range(len(self.red.capas[-1].neuronas)):
-                    y_in = self.red.capas[-1].neuronas[j].valor_entrada
-                    cambio = self.alpha * (record_y[j] - y_in)
-                    nuevo_peso = bias_i.conexiones[j].peso_anterior + cambio
-                    bias_i.conexiones[j].peso = nuevo_peso
-                    bias_i.conexiones[j].peso_anterior = nuevo_peso
+        #         # Paso 5.b Ajuste de los pesos en bias
+        #         bias_i = self.red.capas[0].neuronas[i+1]
+        #         for j in range(len(self.red.capas[-1].neuronas)):
+        #             y_in = self.red.capas[-1].neuronas[j].valor_entrada
+        #             cambio = self.alpha * (record_y[j] - y_in)
+        #             nuevo_peso = bias_i.conexiones[j].peso_anterior + cambio
+        #             bias_i.conexiones[j].peso = nuevo_peso
+        #             bias_i.conexiones[j].peso_anterior = nuevo_peso
 
-                    # Actualiza cambio peso si existe uno mayor
-                    if cambio_peso < abs(cambio):
-                            cambio_peso = abs(cambio)
+        #             # Actualiza cambio peso si existe uno mayor
+        #             if cambio_peso < abs(cambio):
+        #                     cambio_peso = abs(cambio)
                 
                 # Ahora se inicializa la entrada de las neuronas para proximas propagaciones
                 self.red.capas[-1].inicializar()
 
-            # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
-            error_cuad_med = error_cuad_med/(len(y_train))
+        #     # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
+        #     error_cuad_med = error_cuad_med/(len(y_train))
             
-            # Impresion por pantalla de epoca completada y error cuadratico medio
-            # print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
-            X.append(epoca)
-            Y.append(error_cuad_med)
+        #     # Impresion por pantalla de epoca completada y error cuadratico medio
+        #     # print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+        #     X.append(epoca)
+        #     Y.append(error_cuad_med)
             
-            # Paso 6, si cambio_peso es menor que la torelancia, se termina, sino vuelve al bucle while
-            if cambio_peso >= self.tolerancia:
-                parar = False
+        #     # Paso 6, si cambio_peso es menor que la torelancia, se termina, sino vuelve al bucle while
+        #     if cambio_peso >= self.tolerancia:
+        #         parar = False
         """
         plt.plot(X, Y)
         plt.show()
@@ -240,7 +290,7 @@ class Adaline():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Adaline')
+        description='red')
     parser.add_argument('--modo1',
                         nargs=2,
                         metavar=('fichero', 'porcion'),
@@ -257,10 +307,6 @@ if __name__ == '__main__':
                         nargs=1,
                         metavar='fichero',
                         help='Nombre del fichero de salida')
-    parser.add_argument('--umbral',
-                        nargs=1,
-                        metavar='umbral',
-                        help='Umbral de la red')
     parser.add_argument('--alpha',
                         nargs=1,
                         metavar='alpha',
@@ -281,30 +327,29 @@ if __name__ == '__main__':
     else:
         f_out = open(args.f_out[0], 'w')
     
-    umbral = float(args.umbral[0]) if args.umbral else 0.2
     alpha = float(args.alpha[0]) if args.alpha else 0.3
     torelancia = float(args.torelancia[0]) if args.torelancia else 0.22
     epoca = int(args.epoca[0]) if args.epoca else 100
 
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
-        adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
+        adaline = Multicapa(alpha=alpha, tipo=Tipo.SIGMOIDE, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        adaline.score(X_train, y_train)
-        adaline.test(X_test, y_test, f_out)
+        # adaline.score(X_train, y_train)
+        # adaline.test(X_test, y_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
-        adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
+        adaline = Multicapa(alpha=alpha, tipo=Tipo.SIGMOIDE, tolerancia=torelancia, epoca=epoca)
         adaline.train(X, y)
         # adaline.score(X, y)
-        adaline.test(X, y, f_out)
+        # adaline.test(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
-        adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
+        adaline = Multicapa(alpha=alpha, tipo=Tipo.SIGMOIDE, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        adaline.score(X_train, y_train)
-        adaline.test(X_test, y_test, f_out)
+        # adaline.score(X_train, y_train)
+        # adaline.test(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)
