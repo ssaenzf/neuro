@@ -302,7 +302,7 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
         adaline = Adaline(umbral=umbral, alpha=alpha, tolerancia=torelancia, epoca=epoca)
         adaline.train(X_train, y_train)
-        adaline.score(X_train, y_train)
+        # adaline.score(X_train, y_train)
         adaline.test(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
