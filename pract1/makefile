@@ -58,12 +58,12 @@ ejecuta_adaline:
 # Perceptron y Adaline Problema Real 2
 ejecuta_perceptron2:
 	@echo "Ejecutando el script Perceptron. Problema real 2."
-	python3 perceptron.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(PREDICCION)prediccion_perceptron.txt --umbral 0.1 --alpha 0.025 --epoca 400
+	python3 perceptron.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(PREDICCION)prediccion_perceptron.txt --umbral 0.2 --alpha 0.79 --epoca 160
 	@echo ""
 
 ejecuta_adaline2:
 	@echo "Ejecutando el script Adaline. Problema real 2."
-	python3 adaline.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(PREDICCION)prediccion_adaline.txt --umbral 0.1 --alpha 0.025 --torelancia 0.1
+	python3 adaline.py --modo3 $(DATA)problema_real2.txt $(DATA)problema_real2_no_etiquetados.txt --f_out $(PREDICCION)prediccion_adaline.txt --umbral 0.2 --alpha 0.08 --torelancia 0.1 --epoca 20
 	@echo ""
 
 clean:

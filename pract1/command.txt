@@ -1,20 +1,24 @@
 python McCulloch-Pitts.py --f_in data/entrada.txt --f_out salida.txt
 
-python perceptron.py --modo2 data/and.txt --f_out output/and_output.txt
-python perceptron.py --modo2 data/or.txt --f_out output/or_output.txt
-python perceptron.py --modo2 data/nand.txt --f_out output/nand_output.txt
-python perceptron.py --modo2 data/xor.txt --f_out output/xor_output.txt
+python perceptron.py --modo2 data/and.txt --f_out output/and_per_output.txt
+python perceptron.py --modo2 data/or.txt --f_out output/or_per_output.txt
+python perceptron.py --modo2 data/nand.txt --f_out output/nand_per_output.txt
+python perceptron.py --modo2 data/xor.txt --f_out output/xor_per_output.txt
 
-python adaline.py --modo2 data/and.txt --f_out output/and_output.txt
-python adaline.py --modo2 data/or.txt --f_out output/or_output.txt
-python adaline.py --modo2 data/nand.txt --f_out output/nand_output.txt
-python adaline.py --modo2 data/xor.txt --f_out output/xor_output.txt
+python adaline.py --modo2 data/and.txt --f_out output/and_ada_output.txt
+python adaline.py --modo2 data/or.txt --f_out output/or_ada_output.txt
+python adaline.py --modo2 data/nand.txt --f_out output/nand_ada_output.txt
+python adaline.py --modo2 data/xor.txt --f_out output/xor_ada_output.txt
 
 python perceptron.py --modo2 data/problema_real1.txt --f_out output/prob_real1_output.txt --umbral 0.2 --alpha 0.1 --epoca 100
 python adaline.py --modo2 data/problema_real1.txt --f_out output/prob_real1_output.txt --umbral 0.2 --alpha 0.1 --torelancia 0.01 --epoca 100
 
 python perceptron.py --modo1 data/problema_real1.txt 0.25 --umbral 0.02 --alpha 0.73
 python adaline.py --modo1 data/problema_real1.txt 0.25 --umbral 0.2 --alpha 0.01 --torelancia 0.01
+
+python3 perceptron.py --modo3 data/problema_real2.txt data/problema_real2_no_etiquetados.txt --f_out predicciones/prediccion_perceptron.txt --umbral 0.2 --alpha 0.79 --epoca 160
+
+python3 adaline.py --modo3 data/problema_real2.txt data/problema_real2_no_etiquetados.txt --f_out predicciones/prediccion_adaline.txt --umbral 0.2 --alpha 0.08 --torelancia 0.1 --epoca 20
 
 
 Debug
