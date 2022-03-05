@@ -40,7 +40,7 @@ ayuda_perceptron:
 
 ejecuta_perceptron:
 	@echo "Ejecutando el script Perceptron."
-	python3 perceptron.py --modo1 $(DATA)problema_real1.txt 0.25 --f_out $(OUTPUT)problema_real1_per.txt --umbral 0.02 --alpha 0.73 --epoca 20
+	python3 perceptron.py --modo1 $(DATA)problema_real1.txt 0.25 --f_out $(OUTPUT)problema_real1_per.txt --umbral 0.01 --alpha 0.125 --epoca 800
 	@echo ""
 
 ayuda_adaline:
@@ -52,7 +52,7 @@ ayuda_adaline:
 
 ejecuta_adaline:
 	@echo "Ejecutando el script Adaline."
-	python3 adaline.py --modo1 $(DATA)problema_real1.txt 0.25 --f_out $(OUTPUT)problema_real1_ada.txt --umbral 0.2 --alpha 0.01 --torelancia 0.01 --epoca 40
+	python3 adaline.py --modo1 $(DATA)problema_real1.txt 0.25 --f_out $(OUTPUT)problema_real1_ada.txt --umbral 0.1 --alpha 0.025 --torelancia 0.01 --epoca 200
 	@echo ""
 
 # Perceptron y Adaline Problema Real 2

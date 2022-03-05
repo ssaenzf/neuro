@@ -13,8 +13,8 @@ python adaline.py --modo2 data/xor.txt --f_out output/xor_ada_output.txt
 python perceptron.py --modo2 data/problema_real1.txt --f_out output/prob_real1_output.txt --umbral 0.2 --alpha 0.1 --epoca 100
 python adaline.py --modo2 data/problema_real1.txt --f_out output/prob_real1_output.txt --umbral 0.2 --alpha 0.1 --torelancia 0.01 --epoca 100
 
-python perceptron.py --modo1 data/problema_real1.txt 0.25 --umbral 0.02 --alpha 0.73
-python adaline.py --modo1 data/problema_real1.txt 0.25 --umbral 0.2 --alpha 0.01 --torelancia 0.01
+python perceptron.py --modo1 data/problema_real1.txt 0.25 --umbral 0.01 --alpha 0.125 --epoca 800
+python adaline.py --modo1 data/problema_real1.txt 0.25 --umbral 0.1 --alpha 0.025 --torelancia 0.01 --epoca 200
 
 python3 perceptron.py --modo3 data/problema_real2.txt data/problema_real2_no_etiquetados.txt --f_out predicciones/prediccion_perceptron.txt --umbral 0.2 --alpha 0.79 --epoca 160
 
