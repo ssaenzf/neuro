@@ -3,11 +3,11 @@ from redNeuronal.Tipo import Tipo
 import numpy as np
 from scipy.special import expit
 
-def sigmoid(x):
-    y = np.exp(-x)
-    return 1/(1+y)
+# def sigmoid(x):
+#     y = np.exp(-x)
+#     return 1/(1+y)
 
-def sigmoid_bipolar(x):
+def sigmoid(x):
     y = np.exp(-x)
     return (2/(1+y)) - 1
 
@@ -30,7 +30,7 @@ class Neurona:
         self.red = red
 
     def conectar(self, neurona, peso):
-        conexion = Conexion(peso, neurona)
+        conexion = Conexion(peso, neurona, name=self.name + "-" + neurona.name)
         self.conexiones = np.append(self.conexiones, conexion)
 
     def disparar(self):
@@ -53,17 +53,12 @@ class Neurona:
             else:
                 self.valor_salida = -1
         elif self.tipo == Tipo.SIGMOIDE:
-            if self.valor_entrada in self.red.calculo:
-                self.valor_salida = self.red.calculo[self.valor_entrada]
+            entrada = round(self.valor_entrada, 4)
+            if entrada in self.red.calculo:
+                self.valor_salida = self.red.calculo[entrada]
             else:
-                self.valor_salida = sigmoid(self.valor_entrada)
-                self.red.calculo[self.valor_entrada] = self.valor_salida
-        elif self.tipo == Tipo.SIGMOIDEBIPOLAR:
-            if self.valor_entrada in self.red.calculo:
-                self.valor_salida = self.red.calculo[self.valor_entrada]
-            else:
-                self.valor_salida = sigmoid_bipolar(self.valor_entrada)
-                self.red.calculo[self.valor_entrada] = self.valor_salida
+                self.valor_salida = sigmoid(entrada)
+                self.red.calculo[entrada] = self.valor_salida
         else:
             self.valor_salida = 0
         
@@ -74,5 +69,11 @@ class Neurona:
         for conexion in self.conexiones:
             conexion.neurona.valor_entrada += conexion.valor * conexion.peso 
 
-    def __str__(self):
-        return "Neurona: " + self.name + " " + str(self.valor_entrada) + " " + str(self.valor_salida)
+    def __str__(self, tab=''):
+        text = ''
+        text += str(tab) + "Neurona " + self.name + ": " + str(self.valor_entrada) + " " + str(self.valor_salida) + "\n"
+        tab += '  '
+        for conexion in self.conexiones:
+            text += str(tab) + str(conexion) + '\n'
+        
+        return text

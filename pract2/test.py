@@ -18,6 +18,7 @@ class Multicapa():
         self.tolerancia = tolerancia
         self.epoca = epoca
 
+    # TODO: cambiar esto que acepta una lista de nº de neuronas para cada capa oculta
     def make_red(self, n_atributos, n_clases):
         # Capa entrada
         capa_entrada = Capa(name='Capa Entrada')
@@ -29,18 +30,11 @@ class Multicapa():
         
         # Capas ocultas
         capas_ocultas = []
-        neu_name = 'Z'
-        n_capa = 1
-        for n_neu in self.capas_neu:
-            capa_oculta = Capa(name=f'Capa Oculta {n_capa}')
-            # Neurona correspondiente al bias
-            capa_oculta.aniadir(Neurona(tipo=Tipo.SESGO, name=f'{neu_name}0'))
-            for i in range(n_neu):
-                capa_oculta.aniadir(Neurona(tipo=Tipo.SIGMOIDE, name=f'{neu_name}{i+1}'))
-            capas_ocultas.append(capa_oculta)
-
-            neu_name += 'Z'
-            n_capa += 1
+        capa_oculta = Capa(name=f'Capa Oculta 1')
+        capa_oculta.aniadir(Neurona(tipo=Tipo.SESGO, name=f'Z0'))
+        for i in range(2):
+            capa_oculta.aniadir(Neurona(tipo=Tipo.SIGMOIDE, name=f'Z{i+1}'))
+        capas_ocultas.append(capa_oculta)
 
         # Capa salida
         capa_salida = Capa(name='Capa Salida')
@@ -55,15 +49,27 @@ class Multicapa():
 
         # Conexiones entre capas. -1 porque el ultimo no tiene conexiones 
         for i in range(len(self.red.capas) - 2):
-            # Se pone flag bias porque no queremos que cada i se conecta con bias de capa j
             self.red.capas[i].conectar(self.red.capas[i+1], -0.5 , 0.5, bias=True)
         self.red.capas[-2].conectar(self.red.capas[-1], -0.5 , 0.5)
+
+        self.red.capas[0].neuronas[0].conexiones[0].peso = 0.4
+        self.red.capas[0].neuronas[0].conexiones[1].peso = 0.6
+        self.red.capas[0].neuronas[1].conexiones[0].peso = 0.7
+        self.red.capas[0].neuronas[1].conexiones[1].peso = -0.4
+        self.red.capas[0].neuronas[2].conexiones[0].peso = -0.2
+        self.red.capas[0].neuronas[2].conexiones[1].peso = 0.3
+
+        self.red.capas[1].neuronas[0].conexiones[0].peso = -0.3
+        self.red.capas[1].neuronas[1].conexiones[0].peso = 0.5
+        self.red.capas[1].neuronas[2].conexiones[0].peso = 0.1
+
+        print(self.red)
 
     # Funcion para la realizacion del entrenamiento por el red
     def train(self, X_train, y_train):
         # Se crea la red del red
         self.make_red(X_train.shape[1], y_train.shape[1])
-        # print(self.red)
+        
 
         # Paso 0, inicial todos los pesos y sesgo
         self.red.inicializar()
@@ -75,7 +81,7 @@ class Multicapa():
         parar = False
         while not parar and epoca < self.epoca:
             # Se pone parar a True suponiendo que no va a actualizar durante la epoca
-            parar = True
+            # parar = True
 
             # Uso para el calculo del error cuadratico medio en cada epoca
             epoca += 1
@@ -126,6 +132,7 @@ class Multicapa():
                     deltas_w.append(deltas_w_jk)
                 cambios_pesos.append(deltas_w)
 
+                # print(deltas_w)
                 # Paso 7 y 8, retropropagacion hacia atras de X capas hasta las conexiones de capa de entrada
                 for i in range(len(self.red.capas) - 2, 0, -1):
                     sigmas_j = []
@@ -135,11 +142,10 @@ class Multicapa():
                         sigma_in_j = 0
                         for k in range(len(sigmas_k)):
                             sigma_in_j += sigmas_k[k] * capa.neuronas[j].conexiones[k].peso
-
+                        
                         z_j = capa.neuronas[j].valor_salida
                         sigma_j = sigma_in_j * 1/2 * (1 + z_j) * (1 - z_j)
                         sigmas_j.append(sigma_j)
-
                         deltas_v_nj = []
                         for neurona in self.red.capas[i-1].neuronas:
                             delta_v_nj = self.alpha * sigma_j * neurona.valor_salida
@@ -159,11 +165,9 @@ class Multicapa():
                 # Paso 10, comprobar condicion de parada e inicial las entradas de ultima capa a 0
                 self.red.capas[-1].inicializar()
 
+            print(self.red)
             # El error cuadratico medio se calcula haciendo la media del total de iteraciones sobre registro totales, y valores esperados dentro de cada registro
             error_cuad_med /= len(y_train)
-            if error_cuad_med > self.tolerancia:
-                parar = False
-
             list_ecm.append(error_cuad_med)
             list_epoca.append(epoca)
             print(f"Epoca: {epoca}, MSE: {error_cuad_med}")

@@ -3,8 +3,9 @@ from redNeuronal.Tipo import Tipo
 from scipy.stats import uniform
 
 class Capa:
-    def __init__(self):
+    def __init__(self, name=''):
         self.neuronas = np.empty(0, dtype=object)
+        self.name = name
 
     def liberar(self):
         pass
@@ -21,8 +22,12 @@ class Capa:
     def aniadir(self, neurona):
         self.neuronas = np.append(self.neuronas, neurona)
     
-    def conectar(self, capa, peso_min, peso_max):
-        for neurona_capa in capa.neuronas:
+    def conectar(self, capa, peso_min, peso_max, bias=False):
+        if bias:
+            start = 1
+        else:
+            start = 0
+        for neurona_capa in capa.neuronas[start:]:
             self.conectar_neurona(neurona_capa, peso_min, peso_max)
 
     def conectar_neurona(self, neurona, peso_min, peso_max):
@@ -42,7 +47,7 @@ class Capa:
             neurona.propagar()
     
     def __str__(self):
-        text = ''
+        text = f'{self.name}: \n'
         for neurona in self.neuronas:
-            text += neurona.__str__() + '\n'
+            text += neurona.__str__(tab='  ') + '\n'
         return text

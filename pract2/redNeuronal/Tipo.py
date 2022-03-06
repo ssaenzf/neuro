@@ -8,5 +8,4 @@ class Tipo(Enum):
     PERCEPTRON = 5
     ADALINE = 6
     SIGMOIDE = 7
-    SIGMOIDEBIPOLAR = 8
-    TANH = 9
+    SALIDA = 8
