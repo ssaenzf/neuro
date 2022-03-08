@@ -1,4 +1,4 @@
-python McCulloch-Pitts.py --f_in data/entrada.txt --f_out salida.txt
+python multicapa.py --modo2 data/and.txt --alpha 0.1 --epoca 1 --neu 2, 3, 4, 5
 
 python multicapa.py --modo2 data/and.txt --alpha 0.1 --epoca 4 --f_out output/and_per_output.txt
 python multicapa.py --modo2 data/or.txt --alpha 0.1 --f_out output/or_per_output.txt

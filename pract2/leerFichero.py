@@ -1,10 +1,11 @@
 import argparse
 from sklearn.model_selection import train_test_split
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 
 class LeerFichero:
     @staticmethod
-    def mode1(file_name, porcion):
+    def mode1(file_name, porcion, norm=False):
         f = open(file_name, 'r')
 
         n_atr, n_class = f.readline().replace('\n', '').split()
@@ -14,17 +15,24 @@ class LeerFichero:
         for row in f.readlines():
             row = row.replace('\n', '').split()
             X.append(row[:-n_class])
-            y.append(row[-n_class:])
+            y_fix = [-1 if int(value) == 0 else int(value) for value in row[-n_class:]]
+            y.append(y_fix)
         f.close()
 
         X = np.array(X, dtype=float)
         y = np.array(y, dtype=int)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=float(porcion))
 
+        if norm:
+            scaler = StandardScaler()
+            scaler.fit(X_train)
+            X_train = scaler.transform(X_train)
+            X_test = scaler.transform(X_test)
+
         return X_train, X_test, y_train, y_test
 
     @staticmethod
-    def mode2(file_name):
+    def mode2(file_name, norm=False):
         f = open(file_name, 'r')
 
         n_atr, n_class = f.readline().replace('\n', '').split()
@@ -34,15 +42,22 @@ class LeerFichero:
         for row in f.readlines():
             row = row.replace('\n', '').split()
             X.append(row[:-n_class])
-            y.append(row[-n_class:])
+            y_fix = [-1 if int(value) == 0 else int(value) for value in row[-n_class:]]
+            y.append(y_fix)
         f.close()
 
         X = np.array(X, dtype=float)
         y = np.array(y, dtype=int)
+
+        if norm:
+            scaler = StandardScaler()
+            scaler.fit(X)
+            X = scaler.transform(X)
+
         return X, y
 
     @staticmethod
-    def mode3(f_train_name, f_test_name):
+    def mode3(f_train_name, f_test_name, norm=False):
         f_train = open(f_train_name, 'r')
         f_test = open(f_test_name, 'r')
 
@@ -53,7 +68,8 @@ class LeerFichero:
         for row in f_train.readlines():
             row = row.replace('\n', '').split()
             X_train.append(row[:-n_class])
-            y_train.append(row[-n_class:])
+            y_fix = [-1 if int(value) == 0 else int(value) for value in row[-n_class:]]
+            y.append(y_fix)
         
         n_atr, n_class = f_test.readline().replace('\n', '').split()
         n_atr = int(n_atr)
@@ -71,6 +87,12 @@ class LeerFichero:
         y_train = np.array(y_train, dtype=int)
         X_test = np.array(X_test, dtype=float)
         y_test = np.array(y_test, dtype=int)
+
+        if norm:
+            scaler = StandardScaler()
+            scaler.fit(X_train)
+            X_train = scaler.transform(X_train)
+            X_test = scaler.transform(X_test)
 
         return X_train, X_test, y_train, y_test
 

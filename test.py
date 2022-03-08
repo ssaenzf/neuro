@@ -15,14 +15,14 @@ start_time = time.time()
 
 dic = {}
 
-num = 1
-for i in range(100):
-    if num in dic:
-        x = dic[num]
-    else:
-        x = sigmoid(num)
-        dic[num] = x
-    print(x)
+# num = 1
+# for i in range(100):
+#     if num in dic:
+#         x = dic[num]
+#     else:
+#         x = sigmoid(num)
+#         dic[num] = x
+#     print(x)
 
 
 # for i in range(100):
@@ -36,3 +36,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 #     print(sigmoid(i))
 
 # print("--- %s seconds ---" % (time.time() - start_time))
+
+
+my_list=[1, 0, 0, 1]
+
+x = [9 if value==0 else value for value in my_list]
+
+print(x)

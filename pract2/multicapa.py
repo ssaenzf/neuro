@@ -5,8 +5,9 @@ from redNeuronal.Neurona import Neurona
 from redNeuronal.Tipo import Tipo
 import argparse
 from leerFichero import LeerFichero
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import confusion_matrix
 
 class Multicapa():
 
@@ -192,12 +193,32 @@ class Multicapa():
 
             y_pred = []
             for neurona_k in self.red.capas[-1].neuronas:
-                
-                y_pred.append(1 if neurona_k.valor_salida >= 0.5 else 0)
+                y_pred.append(1 if neurona_k.valor_salida >= 0 else -1)
             y_preds.append(np.array(y_pred))
         
         return y_preds
-            
+
+    def fix_y(self, y):
+        # Si la longitud de y es 1, ya es una salida binaria, 0 o 1
+        # Aqui, Clase 1 = -1 y clase 2 = 1
+        if len(y[0]) == 1:
+            return y
+
+        # Si la longitud de y es mayor que 1, es una lista de [1 0], y hay que convertir en uno binario
+        # Aqui, Clase 1 = [1 -1], clase 2 = [-1 1]
+        y_fix = []
+        for index in range(len(y)):
+            clase = y[index]
+            for i in range(len(clase)):
+                if clase[i] == 1:
+                    y_fix.append(i)
+        return y_fix
+    
+    def matriz_confusion(self, y_true, y_preds):
+        fix_y_true = self.fix_y(y_true)
+        fix_y_preds = self.fix_y(y_preds)
+        return confusion_matrix(fix_y_true, fix_y_preds)
+
     # Funcion para la prediccion de la red del adaliene
     def test_write(self, X_test, f_out):
         y_preds = self.test(X_test)
@@ -226,8 +247,6 @@ class Multicapa():
     # Funcion para imprimir el score de la red
     def score(self, X, y):
         y_preds = self.test(X)
-        # print(y_preds[:10])
-        # print(y.shape)
         n_acierto = 0
         # Se ejecuta uno a uno el calcula y prediccion para cada registro de entrada
         for index in range(len(y)):
@@ -236,15 +255,6 @@ class Multicapa():
         
         print("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y)*100))
         return n_acierto/len(y)*100
-    
-    def get_weights(self):
-        text = ""
-        for j in range(len(self.red.capas[-1].neuronas)):
-            text += "Y{}\t".format(j+1)
-            for i in range(len(self.red.capas[0].neuronas)):
-                text += "W{}: {:.5f}\t".format(i+1, self.red.capas[0].neuronas[i].conexiones[j].peso)
-            text += "\n"
-        return text
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -304,9 +314,12 @@ if __name__ == '__main__':
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0])
+        # print(y[:10])
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X, y)
         red.score(X, y)
+        y_preds = red.test(X)
+        print(red.matriz_confusion(y, y_preds))
         # red.test_write(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
