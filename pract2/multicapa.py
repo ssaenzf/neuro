@@ -210,13 +210,16 @@ class Multicapa():
         for index in range(len(y)):
             clase = y[index]
             for i in range(len(clase)):
+                # TODO: existe caso que es [1 1] y [-1 -1], estos casos falla
                 if clase[i] == 1:
                     y_fix.append(i)
         return y_fix
     
     def matriz_confusion(self, y_true, y_preds):
+        print(len(y_true), len(y_preds))
         fix_y_true = self.fix_y(y_true)
         fix_y_preds = self.fix_y(y_preds)
+        print(len(fix_y_true), len(fix_y_preds))
         return confusion_matrix(fix_y_true, fix_y_preds)
 
     # Funcion para la prediccion de la red del adaliene
@@ -288,6 +291,11 @@ if __name__ == '__main__':
                         metavar='neu',
                         type=int,
                         help='Lista de neuronas por capa')
+    parser.add_argument('--norm',
+                        nargs=1,
+                        metavar='norm',
+                        choices=['true', 'false'],
+                        help='True or false para normalizar los datos')
     parser.add_argument('--epoca',
                         nargs=1,
                         metavar='epoca',
@@ -304,17 +312,21 @@ if __name__ == '__main__':
     torelancia = float(args.torelancia[0]) if args.torelancia else 0.01
     epoca = int(args.epoca[0]) if args.epoca else 100
     capas_neu = args.neu if args.neu else []
+    if args.norm:
+        norm = args.norm[0] == 'true'
+    else:
+        norm = False
 
     if args.modo1:
-        X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1])
+        X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1], norm=norm)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X_train, y_train)
         # red.score(X_train, y_train)
         # red.test_write(X_test, y_test, f_out)
 
     elif args.modo2:
-        X, y = LeerFichero.mode2(args.modo2[0])
-        # print(y[:10])
+        X, y = LeerFichero.mode2(args.modo2[0], norm=norm)
+        print(X.shape)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X, y)
         red.score(X, y)
@@ -322,7 +334,7 @@ if __name__ == '__main__':
         print(red.matriz_confusion(y, y_preds))
         # red.test_write(X, y, f_out)
     elif args.modo3:
-        X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1])
+        X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1], norm=norm)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X_train, y_train)
         # red.score(X_train, y_train)

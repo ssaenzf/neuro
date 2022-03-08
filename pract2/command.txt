@@ -6,7 +6,7 @@ python multicapa.py --modo2 data/nand.txt --alpha 0.1 --f_out output/nand_per_ou
 python multicapa.py --modo2 data/xor.txt --alpha 0.1 --f_out output/xor_per_output.txt
 
 python multicapa.py --modo2 data/problema_real1.txt --alpha 0.1 --epoca 1 --f_out output/prob_real1_output.txt
-
+python multicapa.py --modo2 data/problema_real1.txt --alpha 0.1 --epoca 1 --norm true
 
 python multicapa.py --modo1 data/problema_real1.txt 0.25 --umbral 0.01 --alpha 0.125 --epoca 800
 
