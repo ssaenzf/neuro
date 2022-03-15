@@ -61,7 +61,7 @@ class Multicapa():
         self.red.capas[-2].conectar(self.red.capas[-1], -0.5 , 0.5)
 
     # Funcion para la realizacion del entrenamiento por el red
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, X_val=None, y_val=None):
         # Se crea la red del red
         self.make_red(X_train.shape[1], y_train.shape[1])
         # print(self.red)
@@ -71,6 +71,7 @@ class Multicapa():
         epoca = 0
         list_epoca = []
         list_ecm = []
+        mejor_score = 0
 
         # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-9
         parar = False
@@ -167,9 +168,20 @@ class Multicapa():
 
             list_ecm.append(error_cuad_med)
             list_epoca.append(epoca)
-            print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+            # print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
 
-        # return list_epoca, list_ecm
+            # Si existe datos de validacion, se evalua para obtener el score,
+            # el mejor score empieza con 0 y se va cambiando
+            # si el acierto en validacion es 5% inferior que mejor score, se para
+            if len(X_val) != 0 and len(y_val) != 0:
+                acierto = self.score(X_val, y_val)
+                if acierto > mejor_score:
+                    mejor_score = acierto
+                elif acierto < mejor_score:
+                    if mejor_score - acierto > 5:
+                        break
+
+        return list_epoca, list_ecm
 
     # Funcion para la prediccion de la red del adaliene
     def test(self, X_test):
@@ -193,8 +205,12 @@ class Multicapa():
 
             y_pred = []
             for neurona_k in self.red.capas[-1].neuronas:
-                y_pred.append(1 if neurona_k.valor_salida >= 0 else -1)
-            y_preds.append(np.array(y_pred))
+                # y_pred.append(1 if neurona_k.valor_salida >= 0 else -1)
+                y_pred.append(neurona_k.valor_salida)
+            fix = np.zeros(len(self.red.capas[-1].neuronas))
+            fix[np.argmax(y_pred)] = 1
+            y_pred = [-1 if int(value) == 0 else int(value) for value in fix]
+            y_preds.append(y_pred)
         
         return y_preds
 
@@ -204,22 +220,14 @@ class Multicapa():
         if len(y[0]) == 1:
             return y
 
-        # Si la longitud de y es mayor que 1, es una lista de [1 0], y hay que convertir en uno binario
-        # Aqui, Clase 1 = [1 -1], clase 2 = [-1 1]
         y_fix = []
-        for index in range(len(y)):
-            clase = y[index]
-            for i in range(len(clase)):
-                # TODO: existe caso que es [1 1] y [-1 -1], estos casos falla
-                if clase[i] == 1:
-                    y_fix.append(i)
+        for y_class in y:
+            y_fix.append(np.argmax(y_class))
         return y_fix
     
     def matriz_confusion(self, y_true, y_preds):
-        print(len(y_true), len(y_preds))
         fix_y_true = self.fix_y(y_true)
         fix_y_preds = self.fix_y(y_preds)
-        print(len(fix_y_true), len(fix_y_preds))
         return confusion_matrix(fix_y_true, fix_y_preds)
 
     # Funcion para la prediccion de la red del adaliene
@@ -256,7 +264,7 @@ class Multicapa():
             if (y[index] == y_preds[index]).all():
                 n_acierto += 1
         
-        print("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y)*100))
+        # print("Porcentaje de aciertos: {}%\n".format(n_acierto/len(y)*100))
         return n_acierto/len(y)*100
 
 if __name__ == '__main__':
@@ -320,24 +328,27 @@ if __name__ == '__main__':
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1], norm=norm)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
-        red.train(X_train, y_train)
-        # red.score(X_train, y_train)
+        red.train(X_train, y_train, X_test, y_test)
+        y_preds = red.test(X_test)
+        print("Porcentaje de aciertos: {}%\n".format(red.score(X_test, y_test)))
+        print(red.matriz_confusion(y_test, y_preds))
         # red.test_write(X_test, y_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0], norm=norm)
-        print(X.shape)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X, y)
-        red.score(X, y)
         y_preds = red.test(X)
+        print("Porcentaje de aciertos: {}%\n".format(red.score(X, y)))
         print(red.matriz_confusion(y, y_preds))
         # red.test_write(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1], norm=norm)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X_train, y_train)
-        # red.score(X_train, y_train)
+        y_preds = red.test(X_test)
+        print("Porcentaje de aciertos: {}%\n".format(red.score(X_test, y_test)))
+        print(red.matriz_confusion(y_test, y_preds))
         # red.test_write(X_test, y_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")

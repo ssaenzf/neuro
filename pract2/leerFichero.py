@@ -78,6 +78,8 @@ class LeerFichero:
         for row in f_test.readlines():
             row = row.replace('\n', '').split()
             X_test.append(row[:-n_class])
+            y_fix = [-1 if int(value) == 0 else int(value) for value in row[-n_class:]]
+            y_test.append(y_fix)
             y_test.append(row[-n_class:])
 
         f_train.close()
