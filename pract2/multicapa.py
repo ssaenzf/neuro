@@ -72,6 +72,7 @@ class Multicapa():
         list_epoca = []
         list_ecm = []
         mejor_score = 0
+        mejor_score_repetido = 0
 
         # Paso 1, mientras que haya actualizacion de peso, se ejecutra paso 2-9
         parar = False
@@ -173,12 +174,18 @@ class Multicapa():
             # Si existe datos de validacion, se evalua para obtener el score,
             # el mejor score empieza con 0 y se va cambiando
             # si el acierto en validacion es 5% inferior que mejor score, se para
+            # si el acierto se repite 20 veces con mejor score, se para
             if len(X_val) != 0 and len(y_val) != 0:
                 acierto = self.score(X_val, y_val)
                 if acierto > mejor_score:
                     mejor_score = acierto
+                    mejor_score_repetido = 0
                 elif acierto < mejor_score:
-                    if mejor_score - acierto > 5:
+                    if mejor_score - acierto > 3:
+                        break
+                elif acierto == mejor_score:
+                    mejor_score_repetido += 1
+                    if mejor_score_repetido == 20:
                         break
 
         return list_epoca, list_ecm
@@ -328,8 +335,9 @@ if __name__ == '__main__':
     if args.modo1:
         X_train, X_test, y_train, y_test = LeerFichero.mode1(args.modo1[0], args.modo1[1], norm=norm)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
-        red.train(X_train, y_train, X_test, y_test)
+        lista_epoca, lista_ecm = red.train(X_train, y_train, X_test, y_test)
         y_preds = red.test(X_test)
+        print(f"Se ha ejecutado {len(lista_epoca)} epocas.")
         print("Porcentaje de aciertos: {}%\n".format(red.score(X_test, y_test)))
         print(red.matriz_confusion(y_test, y_preds))
         # red.test_write(X_test, y_test, f_out)
@@ -337,16 +345,18 @@ if __name__ == '__main__':
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0], norm=norm)
         red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
-        red.train(X, y)
+        lista_epoca, lista_ecm = red.train(X, y)
         y_preds = red.test(X)
+        print(f"Se ha ejecutado {len(lista_epoca)} epocas.")
         print("Porcentaje de aciertos: {}%\n".format(red.score(X, y)))
         print(red.matriz_confusion(y, y_preds))
         # red.test_write(X, y, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1], norm=norm)
-        red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
+        lista_epoca, lista_ecm = red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
         red.train(X_train, y_train)
         y_preds = red.test(X_test)
+        print(f"Se ha ejecutado {len(lista_epoca)} epocas.")
         print("Porcentaje de aciertos: {}%\n".format(red.score(X_test, y_test)))
         print(red.matriz_confusion(y_test, y_preds))
         # red.test_write(X_test, y_test, f_out)
