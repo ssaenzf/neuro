@@ -185,7 +185,7 @@ class Multicapa():
                         break
                 elif acierto == mejor_score:
                     mejor_score_repetido += 1
-                    if mejor_score_repetido == 20:
+                    if mejor_score_repetido == 25:
                         break
 
         return list_epoca, list_ecm
