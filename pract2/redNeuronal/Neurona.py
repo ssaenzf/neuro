@@ -53,7 +53,7 @@ class Neurona:
             else:
                 self.valor_salida = -1
         elif self.tipo == Tipo.SIGMOIDE:
-            entrada = round(self.valor_entrada, 4)
+            entrada = round(self.valor_entrada, 5)
             if entrada in self.red.calculo:
                 self.valor_salida = self.red.calculo[entrada]
             else:

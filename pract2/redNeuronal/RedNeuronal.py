@@ -1,9 +1,10 @@
 import numpy as np
 
 class RedNeuronal:
+    calculo = {}
+
     def __init__(self, cons_aprend=1):
         self.capas = np.empty(0, dtype=object)
-        self.calculo = {}
 
     def liberar(self):
         pass
