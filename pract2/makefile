@@ -30,7 +30,7 @@ ayuda_ayuda_retro:
 
 ejecuta_problema_real6:
 	@echo "Ejecutando el script Multicapa."
-	python3 multicapaSinParar.py --modo1 $(DATA)problema_real6.txt 0.3 --f_out $(OUTPUT)problema_real6_mul.txt --alpha 0.1 --epoca 5000 --neu 20
+	python3 multicapaSinParar.py --modo1 $(DATA)problema_real6.txt 0.3 --f_out $(OUTPUT)problema_real6_mul.txt --alpha 0.1 --epoca 5000 --neu 20 --norm true
 	@echo ""
 
 clean:

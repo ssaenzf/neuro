@@ -11,9 +11,13 @@ def sigmoid2(x):
     y = np.exp(-x)
     return 1/(1+y)
 
-start_time = time.time()
+def sigmoid3(x):
+    y = np.exp(-x)
+    return (2/(1+y)) - 1
 
-dic = {}
+# start_time = time.time()
+
+# dic = {}
 
 # num = 1
 # for i in range(100):
@@ -28,7 +32,7 @@ dic = {}
 # for i in range(100):
 #     print(sigmoid(num))
 
-print("--- %s seconds ---" % (time.time() - start_time))
+# print("--- %s seconds ---" % (time.time() - start_time))
 
 # start_time = time.time()
 
@@ -38,8 +42,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 # print("--- %s seconds ---" % (time.time() - start_time))
 
 
-my_list=[1, 0, 0, 1]
+# my_list=[1, 0, 0, 1]
 
-x = [9 if value==0 else value for value in my_list]
+# x = [9 if value==0 else value for value in my_list]
 
-print(x)
+# print(x)
+
+print(sigmoid3(-20))

@@ -8,6 +8,10 @@ from scipy.special import expit
 #     return 1/(1+y)
 
 def sigmoid(x):
+    if x > 20:
+        return 1
+    elif x < -20:
+        return -1
     y = np.exp(-x)
     return (2/(1+y)) - 1
 
