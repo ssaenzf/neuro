@@ -8,7 +8,7 @@ CYAN = \033[0;36m
 NO_COLOR = \033[0m
 BOLD = \033[1m
 
-all: mkdir compilar ayuda_ayuda_retro ejecuta_perceptron
+all: mkdir compilar ayuda_ayuda_retro ejecuta_problema_real6
 
 mkdir:
 	@mkdir -p $(OUTPUT) $(PREDICCION)
@@ -27,7 +27,6 @@ ayuda_ayuda_retro:
 	@echo "${GREEN}Arg ${CYAN}--epoca {int} ${GREEN}para indicar cuantas épocas se va a ejecutar como máximo.${NO_COLOR}\n"
 	@echo "${GREEN}Arg ${CYAN}--neu {int, int, etc}${GREEN}, se indica con una lista de números de neuronas de cada capa oculta separado por como.${NO_COLOR}\n"
 	@echo "${GREEN}Un ejemplo del uso sería ${CYAN}python3 multicapa.py --modo1 $(DATA)problema_real1.txt 0.25 --alpha 0.1 --neu 2 --f_out $(OUTPUT)salida${NO_COLOR}\n"
-	@echo "${GREEN}En el caso de usar ${CYAN}make ejecuta_perceptron${GREEN}, se generarán los fichero en la carpeta output/.${NO_COLOR}\n"
 
 ejecuta_problema_real6:
 	@echo "Ejecutando el script Multicapa."
