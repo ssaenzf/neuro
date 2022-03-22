@@ -319,7 +319,7 @@ if __name__ == '__main__':
         print(f"Se ha ejecutado {len(lista_epoca)} epocas.")
         print("Porcentaje de aciertos: {}%\n".format(red.score(X_test, y_test)))
         print(red.matriz_confusion(y_test, y_preds))
-        red.test_write(X_test, y_test, f_out)
+        red.test_write(X_test, f_out)
 
     elif args.modo2:
         X, y = LeerFichero.mode2(args.modo2[0], norm=norm)
@@ -329,7 +329,7 @@ if __name__ == '__main__':
         print(f"Se ha ejecutado {len(lista_epoca)} epocas.")
         print("Porcentaje de aciertos: {}%\n".format(red.score(X, y)))
         print(red.matriz_confusion(y, y_preds))
-        red.test_write(X, y, f_out)
+        red.test_write(X, f_out)
     elif args.modo3:
         X_train, X_test, y_train, y_test = LeerFichero.mode3(args.modo3[0], args.modo3[1], norm=norm)
         lista_epoca, lista_ecm = red = Multicapa(alpha=alpha, capas_neu=capas_neu, tolerancia=torelancia, epoca=epoca)
@@ -338,7 +338,7 @@ if __name__ == '__main__':
         print(f"Se ha ejecutado {len(lista_epoca)} epocas.")
         print("Porcentaje de aciertos: {}%\n".format(red.score(X_test, y_test)))
         print(red.matriz_confusion(y_test, y_preds))
-        red.test_write(X_test, y_test, f_out)
+        red.test_write(X_test, f_out)
     else:
         print("Error en los argumentos, necesita especificar algun modo de operacion.")
         exit(1)
