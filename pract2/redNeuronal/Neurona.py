@@ -58,11 +58,9 @@ class Neurona:
                 self.valor_salida = -1
         elif self.tipo == Tipo.SIGMOIDE:
             entrada = round(self.valor_entrada, 5)
-            if entrada in self.red.calculo:
-                self.valor_salida = self.red.calculo[entrada]
-            else:
-                self.valor_salida = sigmoid(entrada)
-                self.red.calculo[entrada] = self.valor_salida
+            if entrada not in self.red.calculo:
+                self.red.calculo[entrada] = sigmoid(entrada)
+            self.valor_salida = self.red.calculo[entrada]
         else:
             self.valor_salida = 0
         
@@ -75,7 +73,7 @@ class Neurona:
 
     def __str__(self, tab=''):
         text = ''
-        text += str(tab) + "Neurona " + self.name + ": " + str(self.valor_entrada) + " " + str(self.valor_salida) + "\n"
+        text += str(tab) + "Neurona " + self.name + "(" + str(self.tipo) + ")"+ ": " + str(self.valor_entrada) + " " + str(self.valor_salida) + "\n"
         tab += '  '
         for conexion in self.conexiones:
             text += str(tab) + str(conexion) + '\n'
