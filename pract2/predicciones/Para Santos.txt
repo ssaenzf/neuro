@@ -1,0 +1,42 @@
+Para todos los problemas:
+- El entrenamiento depende de la inicialicacion de los pesos, min local etc
+- Segun nuestro criterio de parada, se para cuando ecm es inferior a una torelancia o durante el entrenamiento, el score en test como validación se ha empeorado un 5% respecto la mejor score o que se repite 30 veces el mismo valor del score seguido.
+- se usa modo 1 con 25% para test.
+- Por despiste, se ha simulado alpha = 0.01 y 0.03 2 veces, por lo tanto, existe 4 salidas para esos alphas mientras que otras alphas solo hay 2(repetimos 2 simulaciones por cada alpha).
+- Se proporciona 2 excels con todos los resultados simulados y se puede filtar para visualizar.
+
+===================Ej2 parte1=================
+TODO, aniadir graficas. Tienes el excel, coge atributos y genera unas cuantas graficas significativas.
+
+Problema 1
+- Casi la mayoría de las veces se puede conseguir un alto score en Test con pocos entrenamientos aunque a veces por inicialiacion de los pesos, esto puede tardar muchísimo más.
+- Mejores score tras hyperpara...tuning, es para alpha 0.03, num epoca 35 con un score de 99.42%  aunque existe momentos que necesita 1000 epocas y con un score de solo 92.57%. Tambien se puede que ver que con 2 capas, se puede entrenar rápico con un score bueno.
+- Tras revisar mucho, nos quedamos con alpha 0.03 sin capas ocultas ya que solo necesita menos de 100 epocas para conseguir un score de 98%. Por lo tanto, es posible que es un problema separable linealmente
+
+Problema2
+- Este problema ya no tiene un score tan bueno como Problema1, el mejor score conseguido es de 82.85% con alpha 0.1, 2 neuronas en capa oculta y 250 epocas. Otra opción sería 8 neruonas con alpha 0.03, puesto que necesita menos de 300 epocas para llegar un score alrededor de 78%.
+
+Problema3
+- Existe un caso bastante curioso debido a nuestro criterio de parada, porque se para cuando el score en Test se ha empeorado 5% respecto mejor modelo, se para. Pues ha ocurrido de forma muy bruta para el caso de alpha 0.01 con 8 neuronas ocultas, de las 4 simulaciones, se ha entrenado 3 veces con menos de 100 epocas teniendo un score en test de 100% pero justa mente hay una simulación donde se ha parado tras entrenar 2 épocas, osea que la primera época tenía un score mucho mejor que la segunda época y se ha parado. Pero como hay 3 simulaciones donde con pocas épocas se ha conseguido un score perfecto, tenemos motivo suficiente para elegir que esta combinación es la mejor, puesto que para el caso de 2 épocas, seguramente si no se parase, conseguire un score muy alto.
+
+Problema5
+- alpha 0.03, 2 neuronas ocultas, 95% de score con 2 simulaciones y menos de 150 epocas de entrenamiento.
+
+===================Ej2 parte2=================
+Problema4/6 Sin normalizar
+- Para el prob 4, mejor score con 76%, alpha 0.01, 8 neuronas.
+- Para el prob 6, mejor score con solo 55%, alpha 0.01, 4 neuronas capa oculta 1 y 2 oculta 2.
+Se puede notar que casi un 90% de los entrenamientos se ha parado tras entrenar 31 épocas y uno de los criterios de parada es que si repite el score 30 veces, se para. Esto implica que la red no está consiguiendo aprender de forma correcta puesto afena se afecta a los resultados. El motivo principal es que si visualizamos el fichero problema_real4 y 6, existe múltiples atributos con valores gigantescos, esto nos implica que a la hora de entrenar, dar contribuir mucho más esos valores, impidiendo que la red pueda aprender, para ello se aplica la normalización y se pueder ver que los resultados se mejora bastante.
+
+Problema4/6 Con normalizar
+- Lo comentas tu con tu resultado
+
+
+===================Ej3=================
+Por motivo de tiempo, hemos olvidado revertir los valores de X a la hora de escribir los resultados, por lo tanto, el fichero problema_real6_mul.txt que se encuentra en la carpeta prediccion, todos los valores de X están normalizados.
+
+El porcentaje de aciertos es: 84.75745438362262%
+
+La Matriz de confusion es
+[[2090  381]
+ [ 304 1719]]
