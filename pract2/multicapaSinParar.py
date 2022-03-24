@@ -166,7 +166,7 @@ class Multicapa():
 
             list_ecm.append(error_cuad_med)
             list_epoca.append(epoca)
-            # print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
+            print(f"Epoca: {epoca}, MSE: {error_cuad_med}")
         return list_epoca, list_ecm
 
     # Funcion para la prediccion de la red del adaliene
