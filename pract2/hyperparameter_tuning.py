@@ -49,10 +49,10 @@ for fichero in ficheros_entrada:
 #ficheros_entrada = ["data/problema_real4.txt", "data/problema_real6.txt"]
 ficheros_entrada = ["data/problema_real6.txt"]
 df_cols = ['problema', 'alpha' , 'capa_oculta', 'num_epocas', 'score']
-numero_neuronas_capa = [[], [2], [4], [8]]
+numero_neuronas_capa = [[], [4], [8], [16]]
 tolerancia = 0.005
-coeficientes_alpha = [0.001, 0.003, 0.01, 0.03, 0.01, 0.03, 0.1, 0.3]
-epocas = [1500, 1500, 1500]
+coeficientes_alpha = [0.01, 0.03, 0.1, 0.3]
+epocas = [1000]
 norm = True
 test_size = 0.25
 fichero_scores = "data/hyperparameter_tuning_con_norm.csv"
@@ -71,7 +71,7 @@ for fichero in ficheros_entrada:
                 score = red.score(X_test, y_test)
                 num_epocas = lista_epoca[-1]
                 matriz = red.matriz_confusion(y_test, y_preds)
-                new_row = {'problema':fichero[5:], 'alpha':alpha, 'capa_oculta': neuronas, 'num_epocas': epoca,'score': score}
+                new_row = {'problema':fichero[5:], 'alpha':alpha, 'capa_oculta': neuronas, 'num_epocas': num_epocas,'score': score}
                 #append row to the dataframe
                 df = df.append(new_row, ignore_index=True)
                 # TODO: csv con formato: problema, alpha, capa_oculta, num_epocas, score, matriz_confusion
