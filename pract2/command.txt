@@ -14,6 +14,8 @@ python3 multicapa.py --modo3 data/problema_real2.txt data/problema_real2_no_etiq
 
 python3 multicapaSinParar.py --modo1 data/problema_real6.txt 0.3 --f_out predicciones/problema_real6_mul.txt --alpha 0.1 --epoca 1 --neu 20 --norm true
 
+python multicapa.py --modo1 data/problema_real2.txt 0.25 --f_out predicciones/test.txt --alpha 0.1 --epoca 1000 --neu 20
+
 Debug
 python multicapaZhijieDebug.py --modo2 data/and2.txt
 python adaline.py --modo2 data/problemaSolo1.txt --f_out output/problemaSolo1.txt --umbral 0.1 --alpha 1 --torelancia 0.01 --epoca 100

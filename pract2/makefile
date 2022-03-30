@@ -28,6 +28,11 @@ ayuda_ayuda_retro:
 	@echo "${GREEN}Arg ${CYAN}--neu {int, int, etc}${GREEN}, se indica con una lista de números de neuronas de cada capa oculta separado por como.${NO_COLOR}\n"
 	@echo "${GREEN}Un ejemplo del uso sería ${CYAN}python3 multicapa.py --modo1 $(DATA)problema_real1.txt 0.25 --alpha 0.1 --neu 2 --f_out $(OUTPUT)salida${NO_COLOR}\n"
 
+ejecuta_problema_real2:
+	@echo "Ejecutando el script Multicapa Problema real 2."
+	python3 multicapa.py --modo1 $(DATA)problema_real2.txt 0.25 --f_out $(PREDICCION)prediccion_problema_real2.txt --alpha 0.1 --epoca 1000 --neu 2
+	@echo ""
+
 ejecuta_problema_real6:
 	@echo "Ejecutando el script Multicapa."
 	python3 multicapaSinParar.py --modo1 $(DATA)problema_real6.txt 0.3 --f_out $(PREDICCION)problema_real6_mul.txt --alpha 0.1 --epoca 5000 --neu 20 --norm true
