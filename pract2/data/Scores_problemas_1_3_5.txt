@@ -1,8 +1,0 @@
-data/problema_real1.txtValidacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 64.57142857142857%
-Validacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 96.0%
-data/problema_real2.txtValidacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 63.57142857142857%
-Validacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 61.42857142857143%
-data/problema_real3.txtValidacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 26.31578947368421%
-Validacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 31.57894736842105%
-data/problema_real5.txtValidacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 63.30275229357798%
-Validacion con red neuronal con 1 capa oculta con [1] neuronas, alpha 0.001, epocas 1500Porcentaje de aciertos: 88.07339449541286%
