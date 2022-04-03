@@ -8,7 +8,7 @@ CYAN = \033[0;36m
 NO_COLOR = \033[0m
 BOLD = \033[1m
 
-all: mkdir compilar ayuda_ayuda_retro ejecuta_problema_real6
+all: mkdir compilar ayuda_ayuda_retro ejecuta_problema_real2 ejecuta_problema_real6
 
 mkdir:
 	@mkdir -p $(OUTPUT) $(PREDICCION)
